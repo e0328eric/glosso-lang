@@ -509,7 +509,7 @@ void Value::printValue(const char* globalData) const
     case ValueType::GlobalPtr:
         std::cout << &globalData[mAs.globalPtrVal];
         break;
-    // TODO: printing heap pointer is yet implemented
+    // TODO(#6): printing heap pointer is yet implemented
     case ValueType::HeapPtr:
         std::cout << "(not implemented yet)";
         break;
