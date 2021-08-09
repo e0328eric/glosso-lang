@@ -91,7 +91,7 @@ std::ostream& glosso::glossoc::operator<<(std::ostream& os,
         os << FMT_RED;
         for (size_t i = 0; i < err.mLocation.getColumn(); ++i)
             os << " ";
-        // TODO: Yet GlossocErr does not know where the token ends
+        // TODO(#1): Yet GlossocErr does not know where the token ends
         // For this moment, assume that every token has length 1
         os << "^\n" FMT_NORMAL;
     }
