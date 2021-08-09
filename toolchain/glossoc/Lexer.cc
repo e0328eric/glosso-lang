@@ -335,7 +335,7 @@ bool Lexer::lexIdent(std::vector<Token>& tokens)
     return true;
 }
 
-// TODO: Implement parsing floating number, number prefix and number
+// TODO(#5): Implement parsing floating number, number prefix and number
 // postfix
 bool Lexer::lexNumber(std::vector<Token>& tokens)
 {
