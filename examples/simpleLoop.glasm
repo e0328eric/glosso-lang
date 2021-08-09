@@ -1,0 +1,16 @@
+    push0
+    push0
+
+loop:
+    inc
+    swap 1
+    dup 1
+    add
+    swap 1
+    dup 0
+    push 10
+    lt
+    jt loop
+    swap 1
+    println
+    halt

@@ -1,0 +1,35 @@
+// This is a test version of a glosso language syntax
+// It is like a python syntax but the comment is like C
+
+fn main():
+    int x = 3
+    int y = 4
+    println(add(x, y))
+
+fn add(x: int, y: int) -> int:
+    return x + y
+
+// There is a structure, union and enum
+// Syntax:
+// &char == const char*
+// &mut char == char* (not the Rust char)
+struct Person:
+    age: int
+    name: &char // Like Rust, everything is constant in general
+
+union Haha:
+    a: int
+    b: int
+    c: int
+
+// What kind enum format is great? Hmm...
+enum Foo:
+    A
+    B
+    C
+    D
+    E
+    F
+
+fn get_name(person: Person) -> &char:
+    return person.name
