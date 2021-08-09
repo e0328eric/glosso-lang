@@ -414,7 +414,7 @@ Err Compiler::parseChar(Value* output, const Opcode& opcode)
     return Err::Ok;
 }
 
-// TODO: olfactory cannot parse escape character in the proper way
+// TODO(#8): olfactory cannot parse escape character in the proper way
 Err Compiler::parseString(Value* output, const Opcode& opcode)
 {
     // TODO: Implement more opcodes whose operand is string
