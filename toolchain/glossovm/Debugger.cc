@@ -25,7 +25,7 @@ Err Debugger::run()
     {
         std::cout << "> ";
 
-        // TODO: scans opcode is ignored
+        // TODO(#2): scans opcode is ignored
         std::cin >> keyChar;
         if (std::cin.fail())
             std::cin.clear();
