@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
     Err err         = Err::Ok;
     char* sourceStr = nullptr;
 
-    // TODO: implement better command line parser
+    // TODO(#4): implement better command line parser
     switch (argc)
     {
     case 0:
