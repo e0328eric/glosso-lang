@@ -358,7 +358,7 @@ Err Compiler::parseLoopLabel()
 
 Err Compiler::parseChar(Value* output, const Opcode& opcode)
 {
-    // TODO: Implement more opcodes whose operand is char
+    // TODO(#7): Implement more opcodes whose operand is char
     // The only opcode whose operand is char is push in this moment
     if (*mCurrent != '\'' || opcode != Opcode::Push)
         return Err::ParseCharErr;
