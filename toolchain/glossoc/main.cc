@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
     // Check whether any argument is given
     if (argc < 2)
     {
-        // TODO: Integrate this error with GlossocErr print format
+        // TODO(#3): Integrate this error with GlossocErr print format
         std::cerr << "USAGE: glossoc <input-file> [-o <output-file>]\n";
         std::cerr << "ERROR: no input files" << std::endl;
         return 1;
