@@ -1,11 +1,11 @@
 #include <cassert>
-#include <cstdio>
+#include <iostream>
 
 #include "FileIO.hh"
 
-using Err = glosso::glossoc::GlossocErrKind;
+using ErrKind = glosso::glossoc::GlossocErrKind;
 
-Err glosso::glossoc::readFile(char** output, const char* inputFilename)
+ErrKind glosso::glossoc::readFile(char** output, const char* inputFilename)
 {
     assert(*output == nullptr);
 
@@ -47,12 +47,12 @@ Err glosso::glossoc::readFile(char** output, const char* inputFilename)
     }
 
     fclose(inputFile);
-    return Err::Ok;
+    return ErrKind::Ok;
 
 EXCEPTION_HANDLE:
     delete[](*output);
     if (inputFile != nullptr)
         fclose(inputFile);
 
-    return Err::ReadFileErr;
+    return ErrKind::ReadFileErr;
 }

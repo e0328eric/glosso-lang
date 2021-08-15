@@ -5,89 +5,110 @@
 #include <iostream>
 #include <string_view>
 
-#define TOKEN_TYPES(T)         \
-    T(StartStmtBlock, nullptr) \
-    T(EndStmtBlock, nullptr)   \
-    T(EndStmt, nullptr)        \
-    T(Ident, nullptr)          \
-    T(Integer, nullptr)        \
-    T(Plus, nullptr)           \
-    T(Minus, nullptr)          \
-    T(Star, nullptr)           \
-    T(Slash, nullptr)          \
-    T(Assign, nullptr)         \
-    T(AddAssign, nullptr)      \
-    T(SubAssign, nullptr)      \
-    T(StarAssign, nullptr)     \
-    T(SlashAssign, nullptr)    \
-    T(Ampersand, nullptr)      \
-    T(BackSlash, nullptr)      \
-    T(Eq, nullptr)             \
-    T(Neq, nullptr)            \
-    T(Lt, nullptr)             \
-    T(Gt, nullptr)             \
-    T(LtEq, nullptr)           \
-    T(GtEq, nullptr)           \
-    T(Bang, nullptr)           \
-    T(Comma, nullptr)          \
-    T(Period, nullptr)         \
-    T(Colon, nullptr)          \
-    T(SemiColon, nullptr)      \
-    T(Hat, nullptr)            \
-    T(Percent, nullptr)        \
-    T(RangeIncluded, nullptr)  \
-    T(RangeExcluded, nullptr)  \
-    T(RightArrow, nullptr)     \
-    T(Lparen, nullptr)         \
-    T(Rparen, nullptr)
+#include "Span.hh"
 
-#define TOKEN_KEYWORDS(T) \
-    T(Elif, "elif")       \
-    T(Else, "else")       \
-    T(For, "for")         \
-    T(Function, "fn")     \
-    T(If, "if")           \
-    T(In, "in")           \
-    T(Return, "return")   \
-    T(Struct, "struct")   \
-    T(Enum, "enum")       \
-    T(Union, "union")     \
-    T(While, "while")     \
-    T(Const, "const")     \
-    T(CharType, "char")   \
-    T(IntType, "int")
+#define BASIC_TOKEN(T)    \
+    T("", BeginStmt)      \
+    T("", EndStmt)        \
+    T("", BeginStmtBlock) \
+    T("", EndStmtBlock)   \
+    T("", Identifier)     \
+    T("", Operator)       \
+    T("", Integer)        \
+    T("", UInteger)       \
+    T("", Char)
+
+#define DELIMITER_TOKEN(T) \
+    T("(", Lparen)         \
+    T(")", Rparen)         \
+    T("{", Lbrace)         \
+    T("}", Rbrace)         \
+    T("[", Lsqbrace)       \
+    T("]", Rsqbrace)
+
+#define SPECIAL_OP(T)    \
+    T("=", Assign)       \
+    T("+", Plus)         \
+    T("-", Minus)        \
+    T("*", Star)         \
+    T("/", Slash)        \
+    T("+=", PlusAssign)  \
+    T("-=", MinusAssign) \
+    T("*=", StarAssign)  \
+    T("/=", SlashAssign) \
+    T("==", Equal)       \
+    T("!=", Neq)         \
+    T("<", Lt)           \
+    T("<=", LtEq)        \
+    T(">", Gt)           \
+    T(">=", GtEq)        \
+    T("!", Bang)         \
+    T(":", Colon)        \
+    T(";", Semicolon)    \
+    T("&", Ampersand)    \
+    T("->", RightArrow)
+
+#define KEYWORD_TOKEN(T) \
+    T("fn", Function)    \
+    T("return", Return)  \
+    T("opdef", Opdef)    \
+    T("if", If)          \
+    T("elif", Elif)      \
+    T("else", Else)      \
+    T("while", While)    \
+    T("for", For)        \
+    T("struct", Struct)  \
+    T("enum", Enum)      \
+    T("union", Union)
+
+#define TYPE_TOKEN(T)       \
+    T("int", IntegerType)   \
+    T("i8", I8Type)         \
+    T("i16", I16Type)       \
+    T("i32", I32Type)       \
+    T("i64", I64Type)       \
+    T("uint", UIntegerType) \
+    T("u8", U8Type)         \
+    T("u16", U16Type)       \
+    T("u32", U32Type)       \
+    T("u64", U64Type)       \
+    T("char", CharType)
 
 namespace glosso::glossoc
 {
-
-#define T(_t, _tlit) _t,
+#define T(_ts, _t) _t,
 enum class TokenType
 {
-    TOKEN_TYPES(T) TOKEN_KEYWORDS(T)
+    BASIC_TOKEN(T) DELIMITER_TOKEN(T) SPECIAL_OP(T) KEYWORD_TOKEN(T)
+        TYPE_TOKEN(T) Illegal,
 };
 #undef T
+
+TokenType strToKeyword(const char* start, size_t len);
+TokenType strToOperator(const char* start, size_t len);
+std::ostream& operator<<(std::ostream& os, const TokenType& tokType);
 
 class Token
 {
   public:
-    Token() = default;
-    Token(TokenType tokType, const char* literal);
+    Token(TokenType type, const char* literal, size_t litLen, Location start,
+          Location end);
     ~Token() = default;
+
     friend std::ostream& operator<<(std::ostream& os, const Token& token);
 
   public:
-    TokenType tokType;
+    TokenType type;
     std::string_view literal;
+    Span spanLocation;
 };
-
-TokenType takeKeywords(const char* str, size_t len);
-
-std::ostream& operator<<(std::ostream& os, const TokenType& tokKind);
 } // namespace glosso::glossoc
 
-#ifndef USE_TOKEN_TYPES_MACRO
-#undef TOKEN_TYPES
-#undef TOKEN_KEYWORDS
-#endif // USE_TOKEN_TYPES_MACRO
+#ifndef USE_TOKEN_TYPE_MACRO
+#undef BASIC_TOKEN
+#undef DELIMITER_TOKEN
+#undef SPECIAL_OP
+#undef KEYWORD_TOKEN
+#endif // USE_TOKEN_TYPE_MACRO
 
 #endif // GLOSSO_LANG_TOOLCHAIN_GLOSSOC_TOKEN_HH_

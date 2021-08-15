@@ -8,7 +8,7 @@
 #include "Lexer.hh"
 #include "Token.hh"
 
-using Err = glosso::glossoc::GlossocErrKind;
+using ErrKind = glosso::glossoc::GlossocErrKind;
 
 const char* findExtension(const char* fileName)
 {
@@ -24,7 +24,7 @@ const char* findExtension(const char* fileName)
 
 int main(int argc, char* argv[])
 {
-    Err err         = Err::Ok;
+    ErrKind err     = ErrKind::Ok;
     char* sourceStr = nullptr;
 #if 0
     char buffer[100];
@@ -84,7 +84,8 @@ int main(int argc, char* argv[])
     }
 #endif
 
-    if ((err = glosso::glossoc::readFile(&sourceStr, inputFilename)) != Err::Ok)
+    if ((err = glosso::glossoc::readFile(&sourceStr, inputFilename)) !=
+        ErrKind::Ok)
     {
         std::cout << err << std::endl;
         return 1;
@@ -92,18 +93,6 @@ int main(int argc, char* argv[])
 
     // Main part
     glosso::glossoc::Lexer lexer{sourceStr};
-    std::vector<glosso::glossoc::Token> lexedToken;
-    bool result = lexer.lexing(lexedToken);
-    if (!result)
-    {
-        auto errs = lexer.takeErr();
-        for (auto& e : errs)
-            std::cout << e << std::endl;
-        return 1;
-    }
-
-    for (auto& token : lexedToken)
-        std::cout << token << std::endl;
 
     delete[] sourceStr;
     return 0;

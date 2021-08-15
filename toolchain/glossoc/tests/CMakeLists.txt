@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.19)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(glossoc_test mainTest.cc
-        ../Location.cc ../Error.cc ../FileIO.cc ../Lexer.cc
+        ../Span.cc ../Error.cc ../FileIO.cc ../Lexer.cc
         ../Token.cc)
 
 target_compile_options(glossoc_test PRIVATE ${COMPILE_OPTIONS})

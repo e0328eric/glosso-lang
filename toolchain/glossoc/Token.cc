@@ -1,13 +1,7 @@
-#define USE_TOKEN_TYPES_MACRO
+#define USE_TOKEN_TYPE_MACRO
 #include "Token.hh"
 
 using namespace glosso::glossoc;
-
-Token::Token(TokenType tokType, const char* literal)
-    : tokType(tokType)
-    , literal(literal)
-{
-}
 
 static constexpr size_t strLen(const char* str)
 {
@@ -27,44 +21,62 @@ static constexpr uint64_t fnv1Hash(const char* str, size_t len)
     return output;
 }
 
-#define T(_t, _tlit)         \
-    case fnv1Hash(_tlit, 0): \
-        return TokenType::_t;
+#define T(_ts, _t)         \
+    case fnv1Hash(_ts, 0): \
+        return glosso::glossoc::TokenType::_t;
 
-TokenType glosso::glossoc::takeKeywords(const char* str, size_t len)
+TokenType strToKeyword(const char* start, size_t len)
 {
-    switch (fnv1Hash(str, len))
+    switch (fnv1Hash(start, len))
     {
-        TOKEN_KEYWORDS(T)
+        KEYWORD_TOKEN(T)
     default:
-        return TokenType::Ident;
+        return TokenType::Identifier;
     }
 }
 
+TokenType strToOperator(const char* start, size_t len)
+{
+    switch (fnv1Hash(start, len))
+    {
+        SPECIAL_OP(T)
+    default:
+        return TokenType::Operator;
+    }
+}
 #undef T
 
-#define T(_t, _tlit)    \
-    case TokenType::_t: \
-        os << (#_t);    \
+#define T(_ts, _t)                       \
+    case glosso::glossoc::TokenType::_t: \
+        os << (_ts);                     \
         break;
 
 std::ostream& glosso::glossoc::operator<<(std::ostream& os,
-                                          const TokenType& tokKind)
+                                          const TokenType& tokType)
 {
-    switch (tokKind)
+    switch (tokType)
     {
-        TOKEN_TYPES(T)
-        TOKEN_KEYWORDS(T)
+        BASIC_TOKEN(T)
+        DELIMITER_TOKEN(T) SPECIAL_OP(T) KEYWORD_TOKEN(T) TYPE_TOKEN(T);
+    default:
+        os << "(Illegal Opcode)";
+        break;
     }
-
     return os;
 }
+#undef O
 
-#undef T
-
-std::ostream& glosso::glossoc::operator<<(std::ostream& os, const Token& token)
+// Impl of tokens
+Token::Token(TokenType type, const char* literal, size_t litLen, Location start,
+             Location end)
+    : type(type)
+    , literal(literal)
+    , spanLocation(start, end)
 {
-    os << "{ Token: " << token.tokType << ", Literal: " << token.literal
-       << " }";
+}
+
+std::ostream& glosso::glossoc::operator<<(std::ostream& os, const Token& tok)
+{
+    os << "{ TokenType: " << tok.type << ", Literal: " << tok.literal << " }";
     return os;
 }

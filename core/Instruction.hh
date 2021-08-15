@@ -91,7 +91,6 @@
 
 namespace glosso
 {
-
 #define O(_os, _o) _o,
 enum class Opcode : uint8_t
 {

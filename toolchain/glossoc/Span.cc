@@ -1,4 +1,4 @@
-#include "Location.hh"
+#include "Span.hh"
 
 using namespace glosso::glossoc;
 
@@ -32,3 +32,12 @@ std::ostream& glosso::glossoc::operator<<(std::ostream& os,
     os << location.mRow << ":" << location.mColumn;
     return os;
 }
+
+Span::Span(Location start, Location end)
+    : mStart(start)
+    , mEnd(end)
+{
+}
+
+Location& Span::getStart() const { return mStart; }
+Location& Span::getEnd() const { return mEnd; }

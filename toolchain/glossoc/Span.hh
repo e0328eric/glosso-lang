@@ -9,7 +9,7 @@ namespace glosso::glossoc
 class Location
 {
   public:
-    explicit Location();
+    Location();
     Location(size_t row, size_t col);
 
     size_t getRow() const;
@@ -23,6 +23,19 @@ class Location
   private:
     size_t mRow;
     size_t mColumn;
+};
+
+class Span
+{
+  public:
+    Span(Location start, Location end);
+
+    Location& getStart() const;
+    Location& getEnd() const;
+
+  private:
+    Location mStart;
+    Location mEnd;
 };
 } // namespace glosso::glossoc
 

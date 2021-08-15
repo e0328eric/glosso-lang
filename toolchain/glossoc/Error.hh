@@ -3,35 +3,25 @@
 
 #include <iostream>
 
-#include "Location.hh"
+#include "Span.hh"
 
 namespace glosso::glossoc
 {
-enum class GlossocErrKind;
-
-class GlossocErr
-{
-  public:
-    GlossocErr();
-    GlossocErr(GlossocErrKind kind, Location location, const char* sourceCode,
-               const char* additionalMessage = nullptr);
-    friend std::ostream& operator<<(std::ostream& os, const GlossocErr& err);
-
-  private:
-    GlossocErrKind mKind;
-    Location mLocation;
-    const char* mSourceCode;
-    const char* mMsg;
-};
-
 enum class GlossocErrKind
 {
     Ok = 0,
     ReadFileErr,
-    UnknownTokenFoundErr,
 };
 
 std::ostream& operator<<(std::ostream& os, const GlossocErrKind& err);
+
+class GlossocErr
+{
+  private:
+    GlossocErrKind mKind;
+    Span mSpan;
+    const char* mSource;
+};
 } // namespace glosso::glossoc
 
 #endif // GLOSSO_LANG_TOOLCHAIN_GLOSSOC_ERROR_HH_
