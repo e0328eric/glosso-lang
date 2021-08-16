@@ -18,7 +18,7 @@ size_t Location::getRow() const { return mRow; }
 
 size_t Location::getColumn() const { return mColumn; }
 
-// TODO: Move column with amount of the unicode width
+// TODO(#10): Move column with amount of the unicode width
 // In present, every character has length 1 in the terminal.
 // expected: a, ß, 가, 家
 //           ^  ^  ^^  ^^
