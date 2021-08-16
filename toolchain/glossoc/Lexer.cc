@@ -168,7 +168,7 @@ Token Lexer::lexBeginBlockStmt(const Location& startLocation)
 
     nextChar();
 
-    // TODO: tab and space has same length
+    // TODO(#11): tab and space has same length
     // after implementing glossoc config file, change the
     // default tab size by 4
     while (isEitherChar(*mCurrent, ' ', '\t'))
