@@ -306,7 +306,7 @@ Token Lexer::lexOperator()
     return output;
 }
 
-// TODO: Lexing hex, oct, bin integers and floating point numbers
+// TODO(#12): Lexing hex, oct, bin integers and floating point numbers
 // Currently, it only can lex decimal integers
 Token Lexer::lexNumber()
 {
