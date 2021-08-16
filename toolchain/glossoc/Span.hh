@@ -30,8 +30,10 @@ class Span
   public:
     Span(Location start, Location end);
 
-    Location& getStart() const;
-    Location& getEnd() const;
+    const Location& getStart() const;
+    const Location& getEnd() const;
+
+    friend std::ostream& operator<<(std::ostream& os, const Span& span);
 
   private:
     Location mStart;

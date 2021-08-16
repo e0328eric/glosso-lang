@@ -6,7 +6,7 @@
 
 #include "Error.hh"
 #include "Lexer.hh"
-#include "Location.hh"
+#include "Span.hh"
 #include "Token.hh"
 
 using namespace glosso::glossoc;

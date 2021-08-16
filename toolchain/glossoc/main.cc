@@ -8,7 +8,7 @@
 #include "Lexer.hh"
 #include "Token.hh"
 
-using ErrKind = glosso::glossoc::GlossocErrKind;
+using Err = glosso::glossoc::GlossocErr;
 
 const char* findExtension(const char* fileName)
 {
@@ -24,11 +24,9 @@ const char* findExtension(const char* fileName)
 
 int main(int argc, char* argv[])
 {
-    ErrKind err     = ErrKind::Ok;
+    Err err;
     char* sourceStr = nullptr;
-#if 0
     char buffer[100];
-#endif
 
     // Check whether any argument is given
     if (argc < 2)
@@ -41,7 +39,6 @@ int main(int argc, char* argv[])
 
     // Take an input file name and extract an extension of given one
     const char* inputFilename = argv[1];
-#if 0
     const char* extension     = findExtension(inputFilename);
 
     if (extension == nullptr)
@@ -82,18 +79,33 @@ int main(int argc, char* argv[])
         std::cerr << "ERROR: too many input found" << std::endl;
         return 1;
     }
-#endif
 
-    if ((err = glosso::glossoc::readFile(&sourceStr, inputFilename)) !=
-        ErrKind::Ok)
+    if (!(err = glosso::glossoc::readFile(&sourceStr, inputFilename)).isOk())
     {
         std::cout << err << std::endl;
         return 1;
     }
 
     // Main part
-    glosso::glossoc::Lexer lexer{sourceStr};
+    std::vector<glosso::glossoc::Token> foo;
+    glosso::glossoc::Lexer lexer{sourceStr, 15};
 
-    delete[] sourceStr;
-    return 0;
+    while (!lexer.isHalt())
+        foo.emplace_back(lexer.lexToken());
+
+    if (!lexer.lexSucessed())
+    {
+        auto errs = lexer.takeErr();
+        for (auto& e : errs)
+            std::cout << e << std::endl;
+        delete[] sourceStr;
+        return 1;
+    }
+    else
+    {
+        for (auto& token : foo)
+            std::cout << token << std::endl;
+        delete[] sourceStr;
+        return 0;
+    }
 }

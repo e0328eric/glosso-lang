@@ -3,6 +3,7 @@
 
 fn main():
     int x = 3
+
     int y = 4
     println(add(x, y))
 
@@ -31,5 +32,8 @@ enum Foo:
     E
     F
 
-fn get_name(person: Person) -> &char:
-    return person.name
+fn get_name(person: Person, n: int) -> &char:
+    if n == 3:
+        return person.name
+    else:
+        return nullptr

@@ -3,9 +3,10 @@
 
 #include "FileIO.hh"
 
+using Err     = glosso::glossoc::GlossocErr;
 using ErrKind = glosso::glossoc::GlossocErrKind;
 
-ErrKind glosso::glossoc::readFile(char** output, const char* inputFilename)
+Err glosso::glossoc::readFile(char** output, const char* inputFilename)
 {
     assert(*output == nullptr);
 
@@ -47,7 +48,7 @@ ErrKind glosso::glossoc::readFile(char** output, const char* inputFilename)
     }
 
     fclose(inputFile);
-    return ErrKind::Ok;
+    return {};
 
 EXCEPTION_HANDLE:
     delete[](*output);

@@ -10,13 +10,13 @@
 #define BASIC_TOKEN(T)    \
     T("", BeginStmt)      \
     T("", EndStmt)        \
-    T("", BeginStmtBlock) \
-    T("", EndStmtBlock)   \
+    T("", BeginBlockStmt) \
+    T("", EndBlockStmt)   \
     T("", Identifier)     \
     T("", Operator)       \
     T("", Integer)        \
-    T("", UInteger)       \
-    T("", Char)
+    T("", Char)           \
+    T("", Eof)
 
 #define DELIMITER_TOKEN(T) \
     T("(", Lparen)         \
@@ -32,6 +32,7 @@
     T("-", Minus)        \
     T("*", Star)         \
     T("/", Slash)        \
+    T("**", Power)       \
     T("+=", PlusAssign)  \
     T("-=", MinusAssign) \
     T("*=", StarAssign)  \
@@ -43,15 +44,23 @@
     T(">", Gt)           \
     T(">=", GtEq)        \
     T("!", Bang)         \
+    T(",", Comma)        \
+    T(".", Period)       \
     T(":", Colon)        \
     T(";", Semicolon)    \
     T("&", Ampersand)    \
     T("->", RightArrow)
 
 #define KEYWORD_TOKEN(T) \
+    T("true", True)      \
+    T("false", False)    \
     T("fn", Function)    \
     T("return", Return)  \
     T("opdef", Opdef)    \
+    T("prefix", Prefix)  \
+    T("infix", Infix)    \
+    T("infixl", InfixL)  \
+    T("infixr", InfixR)  \
     T("if", If)          \
     T("elif", Elif)      \
     T("else", Else)      \
@@ -59,7 +68,8 @@
     T("for", For)        \
     T("struct", Struct)  \
     T("enum", Enum)      \
-    T("union", Union)
+    T("union", Union)    \
+    T("nullptr", NullPointer)
 
 #define TYPE_TOKEN(T)       \
     T("int", IntegerType)   \
@@ -91,6 +101,8 @@ std::ostream& operator<<(std::ostream& os, const TokenType& tokType);
 class Token
 {
   public:
+    Token();
+    Token(TokenType type, const char* literal, Location start, Location end);
     Token(TokenType type, const char* literal, size_t litLen, Location start,
           Location end);
     ~Token() = default;

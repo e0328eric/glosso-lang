@@ -18,12 +18,18 @@ size_t Location::getRow() const { return mRow; }
 
 size_t Location::getColumn() const { return mColumn; }
 
+// TODO: Move column with amount of the unicode width
+// In present, every character has length 1 in the terminal.
+// expected: a, ß, 가, 家
+//           ^  ^  ^^  ^^
+// actual: a, ß, 가, 家
+//         ^  ^  ^   ^
 void Location::goRight() { ++mColumn; }
 
 void Location::newLine()
 {
     ++mRow;
-    mColumn = 0;
+    mColumn = 1;
 }
 
 std::ostream& glosso::glossoc::operator<<(std::ostream& os,
@@ -39,5 +45,11 @@ Span::Span(Location start, Location end)
 {
 }
 
-Location& Span::getStart() const { return mStart; }
-Location& Span::getEnd() const { return mEnd; }
+const Location& Span::getStart() const { return mStart; }
+const Location& Span::getEnd() const { return mEnd; }
+
+std::ostream& glosso::glossoc::operator<<(std::ostream& os, const Span& span)
+{
+    os << "( " << span.mStart << " " << span.mEnd << " )";
+    return os;
+}
