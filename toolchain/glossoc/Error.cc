@@ -61,6 +61,9 @@ bool GlossocErr::isOk() const { return mKind == ErrKind::Ok; }
 std::ostream& glosso::glossoc::operator<<(std::ostream& os,
                                           const GlossocErr& err)
 {
-    os << "ERROR: " << err.mKind;
+    if (err.mHasSpan)
+        os << "ERROR: " << err.mKind << " at " << err.mSpan;
+    else
+        os << "ERROR: " << err.mKind;
     return os;
 }

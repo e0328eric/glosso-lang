@@ -12,11 +12,11 @@ fn add(x: int, y: int) -> int:
 
 // There is a structure, union and enum
 // Syntax:
-// &char == const char*
-// &mut char == char* (not the Rust char)
+// &char == char*
+// &const char == const char*
 struct Person:
     age: int
-    name: &char // Like Rust, everything is constant in general
+    name: &char
 
 union Haha:
     a: int

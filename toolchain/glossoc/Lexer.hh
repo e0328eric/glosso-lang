@@ -26,8 +26,7 @@ class Lexer
     std::vector<GlossocErr> takeErr() const;
 
   private:
-    Token lexBeginBlockStmt(const Location& startLocation);
-    bool lexEndBlockStmt(Token* output);
+    bool lexBlockStmt(Token* output, const Location& startLocation);
     Token lexIdentifier();
     Token lexOperator();
     Token lexNumber();
@@ -42,11 +41,9 @@ class Lexer
     const char* mCurrent;
     bool mIsHalt;
     Location mCurLocation;
-    bool mIsBlockStmtBegin;
 
     std::vector<size_t> mRecordIndent;
-    size_t mNested;
-    size_t mCurIndent;
+    bool mIsBeginBlockStmtLexed;
 
     const size_t mMaxErrorNum;
     GlossocErr* mErrs;

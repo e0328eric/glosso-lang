@@ -71,10 +71,10 @@ std::ostream& glosso::glossoc::operator<<(std::ostream& os,
 }
 #undef T
 
-Token::Token()
+Token::Token(Location start, Location end)
     : type(TokenType::Illegal)
     , literal("")
-    , spanLocation({1, 1}, {1, 1})
+    , spanLocation(start, end)
 {
 }
 

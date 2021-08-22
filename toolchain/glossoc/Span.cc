@@ -14,6 +14,11 @@ Location::Location(size_t row, size_t column)
 {
 }
 
+bool Location::isFirstCol() const
+{
+    return mColumn == 1;
+}
+
 size_t Location::getRow() const { return mRow; }
 
 size_t Location::getColumn() const { return mColumn; }
@@ -24,7 +29,9 @@ size_t Location::getColumn() const { return mColumn; }
 //           ^  ^  ^^  ^^
 // actual: a, ß, 가, 家
 //         ^  ^  ^   ^
-void Location::goRight() { ++mColumn; }
+Location Location::goRight() const { return Location{mRow, mColumn + 1}; }
+
+void Location::goRightMut() { ++mColumn; }
 
 void Location::newLine()
 {

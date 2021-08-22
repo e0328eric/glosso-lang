@@ -43,6 +43,10 @@
     T("<=", LtEq)        \
     T(">", Gt)           \
     T(">=", GtEq)        \
+    T(">>", Shr)         \
+    T("<<", Shl)         \
+    T(">>=", ShrEq)      \
+    T("<<=", ShlEq)      \
     T("!", Bang)         \
     T(",", Comma)        \
     T(".", Period)       \
@@ -101,7 +105,7 @@ std::ostream& operator<<(std::ostream& os, const TokenType& tokType);
 class Token
 {
   public:
-    Token();
+    Token(Location start, Location end);
     Token(TokenType type, const char* literal, Location start, Location end);
     Token(TokenType type, const char* literal, size_t litLen, Location start,
           Location end);

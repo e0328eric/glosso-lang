@@ -12,10 +12,13 @@ class Location
     Location();
     Location(size_t row, size_t col);
 
+    bool isFirstCol() const;
+
     size_t getRow() const;
     size_t getColumn() const;
 
-    void goRight();
+    Location goRight() const;
+    void goRightMut();
     void newLine();
 
     friend std::ostream& operator<<(std::ostream& os, const Location& location);

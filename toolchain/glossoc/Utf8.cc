@@ -8,24 +8,25 @@ utf8char glosso::glossoc::decodeUtf8(const char** lst)
 
     if ((unsigned char)**lst < 0x80)
     {
-        output = **lst;
+        output = (utf8char)(**lst);
         *lst += 1;
     }
     else if ((**lst & 0xf0) == 0xf0)
     {
-        output = ((*lst)[0] & 0x07) << 18 | ((*lst)[1] & 0x3f) << 12 |
-                 ((*lst)[2] & 0x3f) << 6 | ((*lst)[3] & 0x3f);
+        output =
+            (utf8char)(((*lst)[0] & 0x07) << 18 | ((*lst)[1] & 0x3f) << 12 |
+                       ((*lst)[2] & 0x3f) << 6 | ((*lst)[3] & 0x3f));
         *lst += 4;
     }
     else if ((**lst & 0xe0) == 0xe0)
     {
-        output = ((*lst)[0] & 0x0f) << 12 | ((*lst)[1] & 0x3f) << 6 |
-                 ((*lst)[2] & 0x3f);
+        output = (utf8char)(((*lst)[0] & 0x0f) << 12 | ((*lst)[1] & 0x3f) << 6 |
+                            ((*lst)[2] & 0x3f));
         *lst += 3;
     }
     else if ((**lst & 0xc0) == 0xc0)
     {
-        output = ((*lst)[0] & 0x1f) << 6 | ((*lst)[1] & 0x3f);
+        output = (utf8char)(((*lst)[0] & 0x1f) << 6 | ((*lst)[1] & 0x3f));
         *lst += 2;
     }
     else
@@ -48,7 +49,7 @@ bool glosso::glossoc::encodeUtf8(char** buffer, utf8char chr)
         *(*buffer)++ = (char)((chr >> 6 & 0x3f) | 0x80);
         *(*buffer)++ = (char)((chr & 0x3f) | 0x80);
     }
-    else if (chr & 0x100000 != 0)
+    else if ((chr & 0x100000) != 0)
     {
         *(*buffer)++ = (char)((chr >> 18) | 0xf0);
         *(*buffer)++ = (char)((chr >> 12 & 0x3f) | 0x80);

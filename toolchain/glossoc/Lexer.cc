@@ -7,7 +7,7 @@
 using namespace glosso::glossoc;
 using ErrKind = glosso::glossoc::GlossocErrKind;
 
-// Macros
+// Macros ////
 #define TOKENIZE(_type, _literal)                                           \
     do                                                                      \
     {                                                                       \
@@ -16,6 +16,7 @@ using ErrKind = glosso::glossoc::GlossocErrKind;
     } while (false)
 
 #define PEEK_CHAR(_n) (*(mCurrent + _n))
+////////
 
 // Static Functions ////
 template <typename Char>
@@ -36,10 +37,8 @@ Lexer::Lexer(const char* source, size_t maxErrNum)
     , mCurrent(source)
     , mIsHalt(false)
     , mCurLocation(1, 1)
-    , mIsBlockStmtBegin(false)
     , mRecordIndent()
-    , mNested(0)
-    , mCurIndent(0)
+    , mIsBeginBlockStmtLexed(false)
     , mMaxErrorNum(maxErrNum)
     , mErrs(new GlossocErr[maxErrNum])
     , mErrNum(0)
@@ -67,15 +66,16 @@ std::vector<GlossocErr> Lexer::takeErr() const
 
 Token Lexer::lexToken()
 {
-    Token output;
+    Token output{mCurLocation, mCurLocation.goRight()};
     Location startLocation = mCurLocation;
     mStart                 = mCurrent;
 
-    if (mIsBlockStmtBegin && !isEitherChar(*mCurrent, '\n', '\0'))
-        if (lexEndBlockStmt(&output))
+    if (startLocation.isFirstCol())
+        if (lexBlockStmt(&output, startLocation))
             return output;
 
     skipWhitespace();
+
     switch (*mCurrent)
     {
     case '(':
@@ -116,14 +116,18 @@ Token Lexer::lexToken()
         if (PEEK_CHAR(1) == '\n')
         {
             nextChar();
-            output = lexBeginBlockStmt(startLocation);
+            mIsBeginBlockStmtLexed = true;
+            TOKENIZE(BeginBlockStmt, "");
         }
         else if (isEitherChar(PEEK_CHAR(1), ' ', '\t'))
         {
             nextChar();
             skipWhitespace();
             if (*mCurrent == '\n')
-                output = lexBeginBlockStmt(startLocation);
+            {
+                mIsBeginBlockStmtLexed = true;
+                TOKENIZE(BeginBlockStmt, "");
+            }
             else
                 TOKENIZE(Colon, ":");
         }
@@ -161,116 +165,54 @@ Token Lexer::lexToken()
     return output;
 }
 
-Token Lexer::lexBeginBlockStmt(const Location& startLocation)
+bool Lexer::lexBlockStmt(Token* output, const Location& startLocation)
 {
-    Token output;
-    size_t indentWidth = 0;
+    mStart = mCurrent;
+    size_t currentIndentLen;
 
-    nextChar();
-
-    // TODO(#11): tab and space has same length
-    // after implementing glossoc config file, change the
-    // default tab size by 4
-    while (isEitherChar(*mCurrent, ' ', '\t'))
-    {
-        ++indentWidth;
+    for (currentIndentLen = 0; isEitherChar(*mCurrent, ' ', '\t');
+         ++currentIndentLen)
         nextChar();
-    }
-    if (mRecordIndent.back() >= indentWidth)
+
+    if (isEitherChar(*mCurrent, '/', '\n'))
     {
-        addErr(ErrKind::IndentationErr, startLocation, nullptr);
-        mIsHalt = true;
-        return output;
+        return false;
     }
-    mRecordIndent.push_back(indentWidth);
-    mIsBlockStmtBegin   = true;
-    output.type         = TokenType::BeginBlockStmt;
-    output.spanLocation = {startLocation, mCurLocation};
 
-    return output;
-}
-
-bool Lexer::lexEndBlockStmt(Token* output)
-{
-    Location startLocation = mCurLocation;
-
-    if (mNested > 0)
+    if (mIsBeginBlockStmtLexed)
     {
-        if (mRecordIndent.back() < mCurIndent)
+        if (mIsBeginBlockStmtLexed && currentIndentLen <= mRecordIndent.back())
         {
-            addErr(ErrKind::IndentationErr, startLocation, nullptr);
             mIsHalt = true;
-            return output;
+            addErr(ErrKind::IndentationErr, startLocation, nullptr);
+            return true;
         }
+        else
+            mRecordIndent.push_back(currentIndentLen);
 
-        if (mNested-- <= 0)
-            mIsBlockStmtBegin = false;
+        mIsBeginBlockStmtLexed = false;
+        return false;
+    }
+    else if (currentIndentLen < mRecordIndent.back())
+    {
+        mRecordIndent.pop_back();
         output->type         = TokenType::EndBlockStmt;
         output->spanLocation = {startLocation, mCurLocation};
         return true;
     }
-    else
+    else if (currentIndentLen > mRecordIndent.back())
     {
-        switch (*mCurrent)
-        {
-        case ' ':
-        case '\t':
-        {
-            size_t recordedInitLen = mRecordIndent.size();
-            size_t recordedLen     = recordedInitLen;
-
-            mCurIndent = 0;
-            // TODO(#11): tab and space has same length
-            // after implementing glossoc config file, change the default tab
-            // size by 4
-            while (isEitherChar(*mCurrent, ' ', '\t'))
-            {
-                ++mCurIndent;
-                nextChar();
-            }
-
-            for (; mRecordIndent.back() > mCurIndent; --recordedLen)
-            {
-                ++mNested;
-                mRecordIndent.pop_back();
-            }
-
-            if (mRecordIndent.back() < mCurIndent)
-            {
-                addErr(ErrKind::IndentationErr, startLocation, nullptr);
-                mIsHalt = true;
-                return output;
-            }
-
-            if (recordedLen < recordedInitLen)
-            {
-                if (mNested-- <= 0)
-                    mIsBlockStmtBegin = false;
-                output->type         = TokenType::EndBlockStmt;
-                output->spanLocation = {startLocation, mCurLocation};
-                return true;
-            }
-            else
-                return false;
-        }
-        default:
-            if (mCurLocation.getColumn() == 1)
-            {
-                mRecordIndent.pop_back();
-                output->type         = TokenType::EndBlockStmt;
-                output->spanLocation = {startLocation, mCurLocation};
-                if (mRecordIndent.empty())
-                    mIsBlockStmtBegin = false;
-                return true;
-            }
-            return false;
-        }
+        addErr(ErrKind::IndentationErr, startLocation, nullptr);
+        mIsHalt = true;
+        return true;
     }
+
+    return false;
 }
 
 Token Lexer::lexIdentifier()
 {
-    Token output;
+    Token output{mCurLocation, mCurLocation.goRight()};
     Location startLocation = mCurLocation;
     mStart                 = mCurrent;
 
@@ -289,7 +231,7 @@ Token Lexer::lexIdentifier()
 
 Token Lexer::lexOperator()
 {
-    Token output;
+    Token output{mCurLocation, mCurLocation.goRight()};
     Location startLocation = mCurLocation;
     mStart                 = mCurrent;
 
@@ -310,7 +252,7 @@ Token Lexer::lexOperator()
 // Currently, it only can lex decimal integers
 Token Lexer::lexNumber()
 {
-    Token output;
+    Token output{mCurLocation, mCurLocation.goRight()};
     Location startLocation = mCurLocation;
     mStart                 = mCurrent;
 
@@ -344,7 +286,7 @@ void Lexer::nextChar()
     else
     {
         mCurrent += expectUtf8Len(*mCurrent);
-        mCurLocation.goRight();
+        mCurLocation.goRightMut();
     }
 }
 
