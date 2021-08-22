@@ -26,33 +26,36 @@
     T("[", Lsqbrace)       \
     T("]", Rsqbrace)
 
-#define SPECIAL_OP(T)    \
-    T("=", Assign)       \
-    T("+", Plus)         \
-    T("-", Minus)        \
-    T("*", Star)         \
-    T("/", Slash)        \
-    T("**", Power)       \
-    T("+=", PlusAssign)  \
-    T("-=", MinusAssign) \
-    T("*=", StarAssign)  \
-    T("/=", SlashAssign) \
-    T("==", Equal)       \
-    T("!=", Neq)         \
-    T("<", Lt)           \
-    T("<=", LtEq)        \
-    T(">", Gt)           \
-    T(">=", GtEq)        \
-    T(">>", Shr)         \
-    T("<<", Shl)         \
-    T(">>=", ShrEq)      \
-    T("<<=", ShlEq)      \
-    T("!", Bang)         \
-    T(",", Comma)        \
-    T(".", Period)       \
-    T(":", Colon)        \
-    T(";", Semicolon)    \
-    T("&", Ampersand)    \
+#define SPECIAL_OP(T)      \
+    T("=", Assign)         \
+    T("+", Plus)           \
+    T("-", Minus)          \
+    T("*", Star)           \
+    T("/", Slash)          \
+    T("**", Power)         \
+    T("+=", PlusAssign)    \
+    T("-=", MinusAssign)   \
+    T("*=", StarAssign)    \
+    T("/=", SlashAssign)   \
+    T("==", Equal)         \
+    T("!=", Neq)           \
+    T("<", Lt)             \
+    T("<=", LtEq)          \
+    T(">", Gt)             \
+    T(">=", GtEq)          \
+    T(">>", Shr)           \
+    T("<<", Shl)           \
+    T(">>=", ShrEq)        \
+    T("<<=", ShlEq)        \
+    T("!", Bang)           \
+    T(",", Comma)          \
+    T(".", Period)         \
+    T(":", Colon)          \
+    T(";", Semicolon)      \
+    T("&", Ampersand)      \
+    T("%", Percent)        \
+    T("^", Hat)            \
+    T("..", RangeExcluded) \
     T("->", RightArrow)
 
 #define KEYWORD_TOKEN(T) \
@@ -70,6 +73,7 @@
     T("else", Else)      \
     T("while", While)    \
     T("for", For)        \
+    T("in", In)          \
     T("struct", Struct)  \
     T("enum", Enum)      \
     T("union", Union)    \
@@ -106,6 +110,9 @@ class Token
 {
   public:
     Token(Location start, Location end);
+#ifdef IS_TEST_
+    Token(TokenType type, const char* literal);
+#endif
     Token(TokenType type, const char* literal, Location start, Location end);
     Token(TokenType type, const char* literal, size_t litLen, Location start,
           Location end);

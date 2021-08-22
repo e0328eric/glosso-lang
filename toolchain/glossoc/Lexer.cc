@@ -106,10 +106,12 @@ Token Lexer::lexToken()
             output.type         = TokenType::EndBlockStmt;
             output.spanLocation = {startLocation, mCurLocation};
         }
+        else if (mIsHalt)
+            TOKENIZE(Eof, "");
         else
         {
             mIsHalt = true;
-            TOKENIZE(Eof, "");
+            TOKENIZE(EndStmt, "");
         }
         break;
     case ':':
@@ -129,7 +131,7 @@ Token Lexer::lexToken()
                 TOKENIZE(BeginBlockStmt, "");
             }
             else
-                TOKENIZE(Colon, ":");
+                output = {TokenType::Colon, ":", startLocation, mCurLocation};
         }
         else
             output = lexOperator();

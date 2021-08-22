@@ -1,4 +1,5 @@
 #define USE_TOKEN_TYPE_MACRO
+#define IS_TEST_
 #include "Token.hh"
 
 using namespace glosso::glossoc;
@@ -75,6 +76,13 @@ Token::Token(Location start, Location end)
     : type(TokenType::Illegal)
     , literal("")
     , spanLocation(start, end)
+{
+}
+
+Token::Token(TokenType type, const char* literal)
+    : type(type)
+    , literal(literal)
+    , spanLocation({1, 1}, {1, 1})
 {
 }
 
