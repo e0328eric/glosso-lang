@@ -38,7 +38,7 @@ glosso::Opcode glosso::strToOpcode(const char* start, size_t len)
 
 #define O(_os, _o)           \
     case glosso::Opcode::_o: \
-        os << (_os);           \
+        os << (_os);         \
         break;
 
 std::ostream& glosso::operator<<(std::ostream& os, const Opcode& opcode)

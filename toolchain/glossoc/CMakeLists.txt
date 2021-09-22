@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.19)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(glossoc
     main.cc Span.cc Error.cc FileIO.cc
-    Lexer.cc Token.cc Utf8.cc)
+    Lexer.cc Token.cc Utf8.cc
+    Ast_Expressions.cc Ast_Statements.cc
+    Parser.cc)
 
 target_compile_options(glossoc PRIVATE ${COMPILE_OPTIONS})
 

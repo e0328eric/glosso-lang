@@ -23,6 +23,7 @@ class GlossocErr
     GlossocErr(GlossocErrKind kind);
     GlossocErr(GlossocErrKind kind, Span span, const char* source,
                const char* msg);
+    ~GlossocErr();
 
     bool isOk() const;
 
@@ -30,8 +31,7 @@ class GlossocErr
 
   private:
     GlossocErrKind mKind;
-    bool mHasSpan;
-    Span mSpan;
+    Span* mSpan;
     const char* mSource;
     const char* mMsg;
 };

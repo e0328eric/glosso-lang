@@ -81,24 +81,31 @@ Token Lexer::lexToken()
     case '(':
         TOKENIZE(Lparen, "(");
         break;
+
     case ')':
         TOKENIZE(Rparen, ")");
         break;
+
     case '{':
         TOKENIZE(Lbrace, "{");
         break;
+
     case '}':
         TOKENIZE(Rbrace, "}");
         break;
+
     case '[':
         TOKENIZE(Lsqbrace, "[");
         break;
+
     case ']':
         TOKENIZE(Rsqbrace, "]");
         break;
+
     case '\n':
         TOKENIZE(EndStmt, "");
         break;
+
     case '\0':
         if (mRecordIndent.back() != 0)
         {
@@ -114,6 +121,7 @@ Token Lexer::lexToken()
             TOKENIZE(EndStmt, "");
         }
         break;
+
     case ':':
         if (PEEK_CHAR(1) == '\n')
         {
@@ -136,6 +144,7 @@ Token Lexer::lexToken()
         else
             output = lexOperator();
         break;
+
     case '/':
         if (PEEK_CHAR(1) == '/' && !isOperator(PEEK_CHAR(2)))
         {
@@ -147,6 +156,7 @@ Token Lexer::lexToken()
         else
             output = lexOperator();
         break;
+
     default:
         if (isLetter(*mCurrent))
             output = lexIdentifier();

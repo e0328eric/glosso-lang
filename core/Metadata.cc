@@ -1,4 +1,5 @@
-#include <iostream>
+#include <cstdio>
+#include <cstdlib>
 
 #include "Metadata.hh"
 
@@ -10,16 +11,16 @@ Metadata glosso::parseMetadata(const char* data)
 
     if (metadata.magic != MAGIC_NUMBER)
     {
-        std::cerr << "ERROR: invalid magic number. got " << metadata.magic
-                  << std::endl;
+        fprintf(stderr, "ERROR: invalid magic number. got %lld\n",
+                metadata.magic);
         exit(1);
     }
 
     if (metadata.version != GLOSSO_VM_VERSION)
     {
-        std::cerr << "ERROR: invalid version number. expected "
-                  << GLOSSO_VM_VERSION << ", got " << metadata.version
-                  << std::endl;
+        fprintf(stderr,
+                "ERROR: invalid version number. expected %lld\n, got %lld\n",
+                GLOSSO_VM_VERSION, metadata.version);
         exit(1);
     }
 

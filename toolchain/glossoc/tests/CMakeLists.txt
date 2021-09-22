@@ -4,7 +4,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(glossoc_test mainTest.cc
         ../Span.cc ../Error.cc ../FileIO.cc ../Lexer.cc
-        ../Token.cc ../Utf8.cc)
+        ../Token.cc ../Utf8.cc
+        ../Ast_Expressions.cc ../Ast_Statements.cc
+        ../Parser.cc)
 
 target_compile_options(glossoc_test PRIVATE ${COMPILE_OPTIONS})
 

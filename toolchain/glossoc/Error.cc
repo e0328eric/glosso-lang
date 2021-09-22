@@ -29,8 +29,7 @@ std::ostream& glosso::glossoc::operator<<(std::ostream& os,
 
 GlossocErr::GlossocErr()
     : mKind(ErrKind::Ok)
-    , mHasSpan(false)
-    , mSpan({0, 0}, {0, 0})
+    , mSpan(nullptr)
     , mSource(nullptr)
     , mMsg(nullptr)
 {
@@ -38,8 +37,7 @@ GlossocErr::GlossocErr()
 
 GlossocErr::GlossocErr(ErrKind kind)
     : mKind(kind)
-    , mHasSpan(false)
-    , mSpan({0, 0}, {0, 0})
+    , mSpan(nullptr)
     , mSource(nullptr)
     , mMsg(nullptr)
 {
@@ -48,12 +46,13 @@ GlossocErr::GlossocErr(ErrKind kind)
 GlossocErr::GlossocErr(GlossocErrKind kind, Span span, const char* source,
                        const char* msg)
     : mKind(kind)
-    , mHasSpan(true)
-    , mSpan(span)
+    , mSpan(new Span{span})
     , mSource(source)
     , mMsg(msg)
 {
 }
+
+GlossocErr::~GlossocErr() { delete mSpan; }
 
 bool GlossocErr::isOk() const { return mKind == ErrKind::Ok; }
 
@@ -61,8 +60,8 @@ bool GlossocErr::isOk() const { return mKind == ErrKind::Ok; }
 std::ostream& glosso::glossoc::operator<<(std::ostream& os,
                                           const GlossocErr& err)
 {
-    if (err.mHasSpan)
-        os << "ERROR: " << err.mKind << " at " << err.mSpan;
+    if (err.mSpan)
+        os << "ERROR: " << err.mKind << " at " << *err.mSpan;
     else
         os << "ERROR: " << err.mKind;
     return os;
