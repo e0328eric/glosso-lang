@@ -1,0 +1,12 @@
+push 1.23
+push 32.58
+add
+push 3.77
+mul
+neg
+pushf1
+lt
+push "-((1.23 + 32.58) * 3.77) < 1.0? "
+print
+println
+halt

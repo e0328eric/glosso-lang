@@ -1,0 +1,2 @@
+opdef infixl 8 *=$(x: int, y: int) -> char : 
+    return x ** y

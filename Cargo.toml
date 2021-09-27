@@ -1,7 +1,0 @@
-[workspace]
-members = [
-    "glosso-core",
-    "olfactory",
-    "glossovm",
-    "glossoc",
-]

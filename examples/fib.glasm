@@ -1,0 +1,19 @@
+	push0
+	push0
+	push1
+
+checkIsTen:
+	dup 1
+	push 10
+	dec
+	je printValue
+	dup 1
+	inc
+	dup 3
+	dup 2
+	add
+	jmp checkIsTen
+
+printValue:
+	println
+	halt
