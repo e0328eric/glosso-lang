@@ -1,3 +1,6 @@
+# WARNING!!!
+**This repo is obsolete. Goto [here](https://gitlab.com/almagest3737/glosso-lang)**
+
 # glosso-lang
 
 Experimental language development inspired by [Tsoding's bm](https://github.com/tsoding/bm)
