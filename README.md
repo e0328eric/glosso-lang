@@ -1,6 +1,3 @@
-# WARNING!!!
-**This repo is obsolete. Goto [here](https://gitlab.com/almagest3737/glosso-lang)**
-
 # glosso-lang
 
 Experimental language development inspired by [Tsoding's bm](https://github.com/tsoding/bm)
@@ -26,22 +23,13 @@ Experimental language development inspired by [Tsoding's bm](https://github.com/
 # Build
 Currently, only UNIX related os can build entire codes.
 
-## using `cmake`
+## using python script
 
-This project can be build using `cmake`.
-
-```console
-mkdir build
-cd build
-cmake .. && make
-```
-
-To build the test case,
+This project can be build using python script.
+It uses `clang` compiler in default.
 
 ```console
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Debug .. && make
+./cb b
 ```
 
 # Toolchains
@@ -56,9 +44,7 @@ Assembler for glosso binary. Uses `.glasm` file for input in general
 
 ## example usage
 ```console
-mkdir build
-cd build
-cmake .. && make
+./cb b
 ./bin/olfactory ../examples/fib.glasm -o fib.gsm
 ./bin/glossovm fib.gsm
 ```
