@@ -21,6 +21,8 @@ enum class OlfactoryErr
     ParseFloatErr,
     ParseCharErr,
     ParseStringErr,
+	IllFormedInclude,
+	IllFormedDefine,
 };
 
 std::ostream& operator<<(std::ostream& os, const OlfactoryErr& err);

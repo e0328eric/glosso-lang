@@ -79,6 +79,8 @@ class Value
         void* heapPtrVal;
     } mAs;
 };
+
+std::ostream& operator<<(std::ostream& os, const Value& value);
 } // namespace glosso
 
 #endif // GLOSSO_LANG_CORE_VALUE_HH_

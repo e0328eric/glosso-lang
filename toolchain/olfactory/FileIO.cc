@@ -1,4 +1,6 @@
 #include <cassert>
+#include <cstring>
+#include <cerrno>
 
 #include "FileIO.hh"
 

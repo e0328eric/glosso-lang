@@ -5,6 +5,7 @@
 #include "Compiler.hh"
 #include "Error.hh"
 #include "FileIO.hh"
+#include "Preprocessor.hh"
 
 using Err = glosso::olfactory::OlfactoryErr;
 
@@ -85,13 +86,19 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // Main part
-    glosso::olfactory::Compiler compiler{sourceStr};
-    err = compiler.compile(outputFilename);
+	char* output;
+	glosso::olfactory::Preprocessor prep{inputFilename, sourceStr};
+	if ((err = prep.preprocess(&output)) != Err::Ok)
+	{
+		std::cerr << err << " while preprocessing the code" << std::endl;
+		return 1;
+	}
 
-    if (err != Err::Ok)
+    // Main part
+    glosso::olfactory::Compiler compiler{output};
+    if ((err = compiler.compile(outputFilename)) != Err::Ok)
     {
-        std::cerr << err << " at " << compiler.getCodeLine() << std::endl;
+        std::cerr << err << " at line " << compiler.getCodeLine() << std::endl;
         return 1;
     }
 

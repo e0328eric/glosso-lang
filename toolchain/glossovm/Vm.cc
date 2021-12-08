@@ -56,7 +56,7 @@ Err Vm::run()
     while (!mIsHalt && err == Err::Ok)
         err = runInst();
 
-    return Err::Ok;
+    return err;
 }
 
 Err Vm::runInst()
@@ -76,7 +76,7 @@ Err Vm::runInst()
     }
 
 #define CHECK_IS_VALID_JUMP(_n)       \
-    if ((_n) >= mInstLen || (_n) < 0) \
+    if ((_n) >= mInstLen) \
     {                                 \
         err = Err::InvalidJumpErr;    \
         break;                        \

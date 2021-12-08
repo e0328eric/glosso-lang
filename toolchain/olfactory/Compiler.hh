@@ -12,8 +12,8 @@
 
 namespace glosso::olfactory
 {
-constexpr size_t LABEL_CAPACITY      = 1024;
-constexpr size_t JUMP_CAPACITY       = 1024;
+constexpr size_t LABEL_CAPACITY = 1024;
+constexpr size_t JUMP_CAPACITY = 1024;
 constexpr size_t GLOBAL_MEM_CAPACITY = 1048576;
 
 struct LabelInfo
@@ -35,7 +35,7 @@ class Compiler
     ~Compiler();
 
     Compiler(const Compiler&) = delete;
-    Compiler(Compiler&&)      = delete;
+    Compiler(Compiler&&) = delete;
     Compiler& operator=(const Compiler&) = delete;
     Compiler& operator=(Compiler&&) = delete;
 

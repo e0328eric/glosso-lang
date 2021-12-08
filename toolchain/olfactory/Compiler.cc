@@ -117,6 +117,9 @@ Err Compiler::compile(const char* outputFilename)
 #undef WRITE_FILE
 }
 
+// TODO: This prints the line number of the string
+// which is made from the preprocessor.
+// That means that the line number almost differ to the original one.
 size_t Compiler::getCodeLine() const { return mCodeLine; }
 
 // Compiler functions

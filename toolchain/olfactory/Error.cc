@@ -49,6 +49,12 @@ std::ostream& glosso::olfactory::operator<<(std::ostream& os,
     case OlfactoryErr::ParseStringErr:
         os << "ERROR: parsing string error";
         break;
+	case OlfactoryErr::IllFormedInclude:
+		os << "ERROR: invalid include format found";
+		break;
+	case OlfactoryErr::IllFormedDefine:
+		os << "ERROR: invalid define format found";
+		break;
     }
 
     return os;
