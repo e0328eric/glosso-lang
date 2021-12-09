@@ -26,7 +26,7 @@ static bool isEitherChar(char c, Char toCmp, Chars... toCmps)
     return (c == toCmp) || isEitherChar(c, toCmps...);
 }
 
-inline bool isLabelNameLetter(char chr);
+static inline bool isLabelNameLetter(char chr);
 
 static Err parseInteger(Value* output, const char* start, const char* end,
                         int base);
@@ -38,39 +38,32 @@ static uint8_t hexToInt(const char& ch);
 ////////
 
 Compiler::Compiler(const char* source) noexcept
-    : mSource(source)
-    , mStart(nullptr)
-    , mCurrent(nullptr)
-    , mCodeLine(1)
-    , mProgLine(0)
-    , mIsFinished(false)
-    , mInst()
-    , mLabels()
-    , mLabelsCount(0)
-    , mJumps()
-    , mJumpsCount(0)
-    , mGlobalMem()
-    , mGlobalMemCount(0)
+    : mSource(source), mStart(nullptr), mCurrent(nullptr), mCodeLine(1),
+      mProgLine(0), mIsFinished(false), mInst(), mLabels(), mLabelsCount(0),
+      mJumps(), mJumpsCount(0), mGlobalMem(), mGlobalMemCount(0)
 {
     memset((void*)mGlobalMem, 0, GLOBAL_MEM_CAPACITY);
-    mStart   = mSource;
+    mStart = mSource;
     mCurrent = mSource;
 }
 
-Compiler::~Compiler() { delete[] mSource; }
+Compiler::~Compiler()
+{
+    delete[] mSource;
+}
 
 Err Compiler::compile(const char* outputFilename)
 {
-#define WRITE_FILE(_ptr, _nitems)                                        \
-    do                                                                   \
-    {                                                                    \
-        if ((fwrite(_ptr, 1, _nitems, outputFile)) < _nitems)            \
-        {                                                                \
-            std::cerr << "ERROR: failed writing into " << outputFilename \
-                      << "\n\t";                                         \
-            std::cerr << strerror(errno) << std::endl;                   \
-            return Err::WriteFailedErr;                                  \
-        }                                                                \
+#define WRITE_FILE(_ptr, _nitems)                                              \
+    do                                                                         \
+    {                                                                          \
+        if ((fwrite(_ptr, 1, _nitems, outputFile)) < _nitems)                  \
+        {                                                                      \
+            std::cerr << "ERROR: failed writing into " << outputFilename       \
+                      << "\n\t";                                               \
+            std::cerr << strerror(errno) << std::endl;                         \
+            return Err::WriteFailedErr;                                        \
+        }                                                                      \
     } while (false)
 
     // First run the main function of the olfactory assembly compiler
@@ -91,7 +84,7 @@ Err Compiler::compile(const char* outputFilename)
     uint64_t zero = 0ULL;
 
     size_t padding = 8 - mGlobalMemCount % 8;
-    padding        = padding == 8 ? 0 : padding;
+    padding = padding == 8 ? 0 : padding;
 
     Metadata metaToWrite{MAGIC_NUMBER, GLOSSO_VM_VERSION,
                          (uint64_t)(32 + mGlobalMemCount + padding),
@@ -117,16 +110,19 @@ Err Compiler::compile(const char* outputFilename)
 #undef WRITE_FILE
 }
 
-// TODO: This prints the line number of the string
+// TODO(#13): This prints the line number of the string
 // which is made from the preprocessor.
 // That means that the line number almost differ to the original one.
-size_t Compiler::getCodeLine() const { return mCodeLine; }
+size_t Compiler::getCodeLine() const
+{
+    return mCodeLine;
+}
 
 // Compiler functions
 Err Compiler::parseGlasm()
 {
     size_t labelIdx = 0;
-    Err err         = Err::Ok;
+    Err err = Err::Ok;
 
     // Parse whole glasm file
     while (!mIsFinished && err == Err::Ok)
@@ -190,7 +186,7 @@ Err Compiler::parseInst()
 
 Err Compiler::parseOpcode()
 {
-    Err err     = Err::Ok;
+    Err err = Err::Ok;
     auto opcode = strToOpcode(mStart, (size_t)(mCurrent - mStart));
     auto opType = hasOperand(opcode);
     Value operand;
@@ -350,7 +346,7 @@ Err Compiler::parseLoopLabel()
 
     std::string_view loopLabel{mStart, (size_t)(mCurrent - mStart)};
     mLabels[mLabelsCount].labelName = loopLabel;
-    mLabels[mLabelsCount].progLine  = mProgLine;
+    mLabels[mLabelsCount].progLine = mProgLine;
     ++mLabelsCount;
 
     while (!isEitherChar(*mCurrent, ' ', ';', '\n', '\0'))
@@ -420,9 +416,7 @@ Err Compiler::parseChar(Value* output, const Opcode& opcode)
 // TODO(#8): olfactory cannot parse escape character in the proper way
 Err Compiler::parseString(Value* output, const Opcode& opcode)
 {
-    // TODO(#9): Implement more opcodes whose operand is string
-    // The only opcode whose operand is string is push in this moment
-    if (*mCurrent != '"' || opcode != Opcode::Push)
+    if (*mCurrent != '"' || !hasStringOperand(opcode))
         return Err::ParseStringErr;
 
     mStart = mCurrent;
@@ -470,7 +464,7 @@ void Compiler::skipWhitespace()
         nextChar();
 }
 
-inline bool isLabelNameLetter(char chr)
+static inline bool isLabelNameLetter(char chr)
 {
     return (chr >= 'A' && chr <= 'Z') || (chr >= 'a' && chr <= 'z') ||
            (chr >= '0' && chr <= '9') || chr == '_';
