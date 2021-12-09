@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 
+#include "FileIO.hh"
 #include "Metadata.hh"
 #include "Vm.hh"
 
@@ -715,7 +716,7 @@ Err Vm::runInst()
         auto filename = mGlobalData + prefilename;
         char* output = nullptr;
 
-        if ((err = readFile(output, filename, AtorType::CStyle)) != Err::Ok)
+        if ((err = readFile(&output, filename, AtorType::CStyle)) != Err::Ok)
         {
             return err;
         }
