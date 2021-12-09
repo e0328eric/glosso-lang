@@ -12,27 +12,18 @@ using namespace glosso::glossovm;
 using Err = glosso::glossovm::GlossoVmErr;
 
 Vm::Vm(const char* source)
-    : mSource(source)
-    , mCurrent(nullptr)
-    , mPeek(nullptr)
-    , mIsParseFinished(false)
-    , mGlobalData(nullptr)
-    , mGlobalDataLen(0)
-    , mInst(nullptr)
-    , mInstLen(0)
-    , mIp(0)
-    , mStack()
-    , mSp(0)
-    , mIsHalt(false)
+    : mSource(source), mCurrent(nullptr), mPeek(nullptr),
+      mIsParseFinished(false), mGlobalData(nullptr), mGlobalDataLen(0),
+      mInst(nullptr), mInstLen(0), mIp(0), mStack(), mSp(0), mIsHalt(false)
 {
     size_t sourceLen = strlen(source);
 
     Metadata metadata = parseMetadata(mSource);
 
     mCurrent = mSource + metadata.procLocation;
-    mPeek    = mSource + metadata.procLocation;
+    mPeek = mSource + metadata.procLocation;
 
-    mGlobalData    = mSource + GLOBAL_MEMORY_LOCATION;
+    mGlobalData = mSource + GLOBAL_MEMORY_LOCATION;
     mGlobalDataLen = metadata.globalMemLength;
 
     mInst = new Instruction[sourceLen];
@@ -61,118 +52,118 @@ Err Vm::run()
 
 Err Vm::runInst()
 {
-#define CHECK_STACK_OVERFLOW(_n)      \
-    if (mSp + (_n) >= STACK_CAPACITY) \
-    {                                 \
-        err = Err::StackOverflowErr;  \
-        break;                        \
+#define CHECK_STACK_OVERFLOW(_n)                                               \
+    if (mSp + (_n) >= STACK_CAPACITY)                                          \
+    {                                                                          \
+        err = Err::StackOverflowErr;                                           \
+        break;                                                                 \
     }
 
-#define CHECK_STACK_UNDERFLOW(_n)     \
-    if (mSp < (_n))                   \
-    {                                 \
-        err = Err::StackUnderflowErr; \
-        break;                        \
+#define CHECK_STACK_UNDERFLOW(_n)                                              \
+    if (mSp < (_n))                                                            \
+    {                                                                          \
+        err = Err::StackUnderflowErr;                                          \
+        break;                                                                 \
     }
 
-#define CHECK_IS_VALID_JUMP(_n)       \
-    if ((_n) >= mInstLen) \
-    {                                 \
-        err = Err::InvalidJumpErr;    \
-        break;                        \
+#define CHECK_IS_VALID_JUMP(_n)                                                \
+    if ((_n) >= mInstLen)                                                      \
+    {                                                                          \
+        err = Err::InvalidJumpErr;                                             \
+        break;                                                                 \
     }
 
-#define CHECK_IS_VALID_RELATIVE_JUMP(_n)               \
-    if ((uint64_t)((int64_t)mIp + (_n)) >= mInstLen || \
-        ((int64_t)mIp - (_n)) < 0)                     \
-    {                                                  \
-        err = Err::InvalidJumpErr;                     \
-        break;                                         \
+#define CHECK_IS_VALID_RELATIVE_JUMP(_n)                                       \
+    if ((uint64_t)((int64_t)mIp + (_n)) >= mInstLen ||                         \
+        ((int64_t)mIp - (_n)) < 0)                                             \
+    {                                                                          \
+        err = Err::InvalidJumpErr;                                             \
+        break;                                                                 \
     }
 
-#define CONVERT_OPERAND(_name, _ty, _fnt) \
-    _ty _name = 0;                        \
-    if (!operand._fnt(_name))             \
-    {                                     \
-        err = Err::InvalidOperandErr;     \
-        break;                            \
+#define CONVERT_OPERAND(_name, _ty, _fnt)                                      \
+    _ty _name = 0;                                                             \
+    if (!operand._fnt(_name))                                                  \
+    {                                                                          \
+        err = Err::InvalidOperandErr;                                          \
+        break;                                                                 \
     }
 
-#define PUSH_VALUE(_value)         \
-    CHECK_STACK_OVERFLOW(1);       \
-    mStack[mSp++] = Value{_value}; \
-    ++mIp;                         \
+#define PUSH_VALUE(_value)                                                     \
+    CHECK_STACK_OVERFLOW(1);                                                   \
+    mStack[mSp++] = Value{_value};                                             \
+    ++mIp;                                                                     \
     break
 
-#define SCAN_VALUE(_type)             \
-    do                                \
-    {                                 \
-        CHECK_STACK_OVERFLOW(1);      \
-        _type value;                  \
-        std::cin >> value;            \
-        mStack[mSp++] = Value{value}; \
-        ++mIp;                        \
-    } while (false);                  \
+#define SCAN_VALUE(_type)                                                      \
+    do                                                                         \
+    {                                                                          \
+        CHECK_STACK_OVERFLOW(1);                                               \
+        _type value;                                                           \
+        std::cin >> value;                                                     \
+        mStack[mSp++] = Value{value};                                          \
+        ++mIp;                                                                 \
+    } while (false);                                                           \
     break
 
-#define READ_VALUE(_readType)                         \
-    do                                                \
-    {                                                 \
-        CHECK_STACK_UNDERFLOW(1);                     \
-        CHECK_STACK_OVERFLOW(1);                      \
-                                                      \
-        void* ptr  = nullptr;                         \
-        auto value = mStack[mSp - 1];                 \
-                                                      \
-        if ((ptr = value.getHeapPtrVal()) == nullptr) \
-            return Err::ReadWithNonPtrValueErr;       \
-                                                      \
-        mStack[mSp++] = Value{*(_readType*)ptr};      \
-        ++mIp;                                        \
-    } while (false);                                  \
+#define READ_VALUE(_readType)                                                  \
+    do                                                                         \
+    {                                                                          \
+        CHECK_STACK_UNDERFLOW(1);                                              \
+        CHECK_STACK_OVERFLOW(1);                                               \
+                                                                               \
+        void* ptr = nullptr;                                                   \
+        auto value = mStack[mSp - 1];                                          \
+                                                                               \
+        if ((ptr = value.getHeapPtrVal()) == nullptr)                          \
+            return Err::ReadWithNonPtrValueErr;                                \
+                                                                               \
+        mStack[mSp++] = Value{*(_readType*)ptr};                               \
+        ++mIp;                                                                 \
+    } while (false);                                                           \
     break
 
-#define WRITE_VALUE(_writeType, _convFnt)                \
-    do                                                   \
-    {                                                    \
-        CHECK_STACK_UNDERFLOW(2);                        \
-                                                         \
-        _writeType writeV;                               \
-        auto writeValue = mStack[--mSp];                 \
-        auto ptrValue   = mStack[mSp - 1];               \
-        void* ptr       = nullptr;                       \
-                                                         \
-        if ((ptr = ptrValue.getHeapPtrVal()) == nullptr) \
-            return Err::WriteWithNonPtrValueErr;         \
-                                                         \
-        if (!writeValue._convFnt(writeV))                \
-            return Err::WriteValueErr;                   \
-                                                         \
-        *(_writeType*)ptr = writeV;                      \
-        ++mIp;                                           \
-    } while (false);                                     \
+#define WRITE_VALUE(_writeType, _convFnt)                                      \
+    do                                                                         \
+    {                                                                          \
+        CHECK_STACK_UNDERFLOW(2);                                              \
+                                                                               \
+        _writeType writeV;                                                     \
+        auto writeValue = mStack[--mSp];                                       \
+        auto ptrValue = mStack[mSp - 1];                                       \
+        void* ptr = nullptr;                                                   \
+                                                                               \
+        if ((ptr = ptrValue.getHeapPtrVal()) == nullptr)                       \
+            return Err::WriteWithNonPtrValueErr;                               \
+                                                                               \
+        if (!writeValue._convFnt(writeV))                                      \
+            return Err::WriteValueErr;                                         \
+                                                                               \
+        *(_writeType*)ptr = writeV;                                            \
+        ++mIp;                                                                 \
+    } while (false);                                                           \
     break;
 
-#define CAST_VALUE(_from, _fromFnt, _to)   \
-    do                                     \
-    {                                      \
-        CHECK_STACK_UNDERFLOW(1);          \
-        _from v;                           \
-        auto value = mStack[--mSp];        \
-        if (!value._fromFnt(v))            \
-            mStack[mSp++] = Value{};       \
-        else                               \
-            mStack[mSp++] = Value{(_to)v}; \
-        ++mIp;                             \
-    } while (false);                       \
+#define CAST_VALUE(_from, _fromFnt, _to)                                       \
+    do                                                                         \
+    {                                                                          \
+        CHECK_STACK_UNDERFLOW(1);                                              \
+        _from v;                                                               \
+        auto value = mStack[--mSp];                                            \
+        if (!value._fromFnt(v))                                                \
+            mStack[mSp++] = Value{};                                           \
+        else                                                                   \
+            mStack[mSp++] = Value{(_to)v};                                     \
+        ++mIp;                                                                 \
+    } while (false);                                                           \
     break
 
     ////////////////////////////////////////////////
     if (mIp >= mInstLen)
         return Err::InvalidAccessInstErr;
 
-    Err err             = Err::Ok;
-    const auto& opcode  = mInst[mIp].opcode;
+    Err err = Err::Ok;
+    const auto& opcode = mInst[mIp].opcode;
     const auto& operand = mInst[mIp].operand;
 
     switch (opcode)
@@ -223,8 +214,7 @@ Err Vm::runInst()
         ++mIp;
         break;
 
-    case Opcode::Dup:
-    {
+    case Opcode::Dup: {
         CONVERT_OPERAND(value, uint64_t, getUIntVal);
         CHECK_STACK_UNDERFLOW(value + 1);
         CHECK_STACK_OVERFLOW(1);
@@ -235,16 +225,32 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::Jmp:
-    {
+    case Opcode::Sdup: {
+        CHECK_STACK_UNDERFLOW(1);
+        uint64_t value;
+        if (!mStack[--mSp].getUIntVal(value))
+        {
+            mStack[mSp++] = Value{};
+            break;
+        }
+
+        CHECK_STACK_UNDERFLOW(value + 1);
+        CHECK_STACK_OVERFLOW(1);
+
+        mStack[mSp] = mStack[mSp - 1 - value];
+        ++mSp;
+        ++mIp;
+        break;
+    }
+
+    case Opcode::Jmp: {
         CONVERT_OPERAND(value, uint64_t, getUIntVal);
         CHECK_IS_VALID_JUMP(value);
         mIp = value;
         break;
     }
 
-    case Opcode::JmpTrue:
-    {
+    case Opcode::JmpTrue: {
         CONVERT_OPERAND(goInto, uint64_t, getUIntVal);
         CHECK_IS_VALID_JUMP(goInto);
         CHECK_STACK_UNDERFLOW(1);
@@ -259,8 +265,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::JmpFalse:
-    {
+    case Opcode::JmpFalse: {
         CONVERT_OPERAND(goInto, uint64_t, getUIntVal);
         CHECK_IS_VALID_JUMP(goInto);
         CHECK_STACK_UNDERFLOW(1);
@@ -275,8 +280,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::JmpEq:
-    {
+    case Opcode::JmpEq: {
         CONVERT_OPERAND(goInto, uint64_t, getUIntVal);
         CHECK_IS_VALID_JUMP(goInto);
         CHECK_STACK_UNDERFLOW(2);
@@ -292,8 +296,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::JmpNeq:
-    {
+    case Opcode::JmpNeq: {
         CONVERT_OPERAND(goInto, uint64_t, getUIntVal);
         CHECK_IS_VALID_JUMP(goInto);
         CHECK_STACK_UNDERFLOW(2);
@@ -309,16 +312,14 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::RelativeJmp:
-    {
+    case Opcode::RelativeJmp: {
         CONVERT_OPERAND(value, int64_t, getIntVal);
         CHECK_IS_VALID_RELATIVE_JUMP(value);
         mIp = (uint64_t)((int64_t)mIp + value);
         break;
     }
 
-    case Opcode::RelativeJmpTrue:
-    {
+    case Opcode::RelativeJmpTrue: {
         CONVERT_OPERAND(goInto, int64_t, getIntVal);
         CHECK_IS_VALID_RELATIVE_JUMP(goInto);
         CHECK_STACK_UNDERFLOW(1);
@@ -333,8 +334,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::RelativeJmpFalse:
-    {
+    case Opcode::RelativeJmpFalse: {
         CONVERT_OPERAND(goInto, int64_t, getIntVal);
         CHECK_IS_VALID_RELATIVE_JUMP(goInto);
         CHECK_STACK_UNDERFLOW(1);
@@ -349,8 +349,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::RelativeJmpEq:
-    {
+    case Opcode::RelativeJmpEq: {
         CONVERT_OPERAND(goInto, int64_t, getIntVal);
         CHECK_IS_VALID_RELATIVE_JUMP(goInto);
         CHECK_STACK_UNDERFLOW(2);
@@ -366,8 +365,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::RelativeJmpNeq:
-    {
+    case Opcode::RelativeJmpNeq: {
         CONVERT_OPERAND(goInto, int64_t, getIntVal);
         CHECK_IS_VALID_RELATIVE_JUMP(goInto);
         CHECK_STACK_UNDERFLOW(2);
@@ -383,24 +381,22 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::Call:
-    {
+    case Opcode::Call: {
         CONVERT_OPERAND(goInto, uint64_t, getUIntVal);
         CHECK_IS_VALID_JUMP(goInto);
         CHECK_STACK_OVERFLOW(1);
 
         mStack[mSp++] = Value{(uint64_t)mIp + 1};
-        mIp           = goInto;
+        mIp = goInto;
 
         break;
     }
 
-    case Opcode::Return:
-    {
+    case Opcode::Return: {
         CHECK_STACK_UNDERFLOW(1);
 
         uint64_t addr = 0ULL;
-        auto value    = mStack[--mSp];
+        auto value = mStack[--mSp];
 
         if (!value.getUIntVal(addr))
             return Err::IllegalReturnAddressErr;
@@ -410,151 +406,156 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::Swap:
-    {
+    case Opcode::Swap: {
         CONVERT_OPERAND(value, uint64_t, getUIntVal);
         CHECK_STACK_UNDERFLOW(value + 1);
 
-        auto tmp                = mStack[mSp - 1];
-        mStack[mSp - 1]         = mStack[mSp - 1 - value];
+        auto tmp = mStack[mSp - 1];
+        mStack[mSp - 1] = mStack[mSp - 1 - value];
         mStack[mSp - 1 - value] = tmp;
         ++mIp;
 
         break;
     }
 
-    case Opcode::Not:
-    {
+    case Opcode::Sswap: {
         CHECK_STACK_UNDERFLOW(1);
-        auto value    = mStack[--mSp];
+        uint64_t value;
+        if (!mStack[--mSp].getUIntVal(value))
+        {
+            mStack[mSp++] = Value{};
+            break;
+        }
+
+        CHECK_STACK_UNDERFLOW(value + 1);
+
+        auto tmp = mStack[mSp - 1];
+        mStack[mSp - 1] = mStack[mSp - 1 - value];
+        mStack[mSp - 1 - value] = tmp;
+        ++mIp;
+
+        break;
+    }
+
+    case Opcode::Not: {
+        CHECK_STACK_UNDERFLOW(1);
+        auto value = mStack[--mSp];
         mStack[mSp++] = !value;
         ++mIp;
 
         break;
     }
 
-    case Opcode::Add:
-    {
+    case Opcode::Add: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = val1 + val2;
         ++mIp;
 
         break;
     }
 
-    case Opcode::Sub:
-    {
+    case Opcode::Sub: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = val1 - val2;
         ++mIp;
 
         break;
     }
 
-    case Opcode::Mul:
-    {
+    case Opcode::Mul: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = val1 * val2;
         ++mIp;
 
         break;
     }
 
-    case Opcode::Div:
-    {
+    case Opcode::Div: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = val1 / val2;
         ++mIp;
 
         break;
     }
 
-    case Opcode::Negate:
-    {
+    case Opcode::Negate: {
         CHECK_STACK_UNDERFLOW(1);
-        auto value    = mStack[--mSp];
+        auto value = mStack[--mSp];
         mStack[mSp++] = -value;
         ++mIp;
 
         break;
     }
 
-    case Opcode::Equal:
-    {
+    case Opcode::Equal: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = Value{val1 == val2};
         ++mIp;
 
         break;
     }
 
-    case Opcode::Neq:
-    {
+    case Opcode::Neq: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = Value{val1 != val2};
         ++mIp;
 
         break;
     }
 
-    case Opcode::Lt:
-    {
+    case Opcode::Lt: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = Value{val1 < val2};
         ++mIp;
 
         break;
     }
 
-    case Opcode::LtEq:
-    {
+    case Opcode::LtEq: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = Value{val1 <= val2};
         ++mIp;
 
         break;
     }
 
-    case Opcode::Gt:
-    {
+    case Opcode::Gt: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = Value{val1 > val2};
         ++mIp;
 
         break;
     }
 
-    case Opcode::GtEq:
-    {
+    case Opcode::GtEq: {
         CHECK_STACK_UNDERFLOW(2);
-        auto val2     = mStack[--mSp];
-        auto val1     = mStack[--mSp];
+        auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
         mStack[mSp++] = Value{val1 >= val2};
         ++mIp;
 
         break;
     }
 
-    case Opcode::Inc:
-    {
+    case Opcode::Inc: {
         CHECK_STACK_UNDERFLOW(1);
         ++mStack[mSp - 1];
         ++mIp;
@@ -562,8 +563,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::Dec:
-    {
+    case Opcode::Dec: {
         CHECK_STACK_UNDERFLOW(1);
         --mStack[mSp - 1];
         ++mIp;
@@ -586,8 +586,7 @@ Err Vm::runInst()
     case Opcode::ScanB:
         SCAN_VALUE(bool);
 
-    case Opcode::ScanS:
-    {
+    case Opcode::ScanS: {
         CHECK_STACK_OVERFLOW(1);
 
         std::string getInput;
@@ -604,8 +603,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::Print:
-    {
+    case Opcode::Print: {
         CHECK_STACK_UNDERFLOW(1);
         auto value = mStack[--mSp];
         value.printValue(mGlobalData);
@@ -614,8 +612,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::PrintLn:
-    {
+    case Opcode::PrintLn: {
         CHECK_STACK_UNDERFLOW(1);
         auto value = mStack[--mSp];
         value.printValue(mGlobalData);
@@ -625,8 +622,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::PrintS:
-    {
+    case Opcode::PrintS: {
         CHECK_STACK_UNDERFLOW(1);
         void* ptr;
         auto value = mStack[mSp - 1];
@@ -643,8 +639,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::PrintSLn:
-    {
+    case Opcode::PrintSLn: {
         CHECK_STACK_UNDERFLOW(1);
         void* ptr;
         auto value = mStack[mSp - 1];
@@ -661,8 +656,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::Alloc:
-    {
+    case Opcode::Alloc: {
         CONVERT_OPERAND(amount, uint64_t, getUIntVal);
         CHECK_STACK_OVERFLOW(1);
 
@@ -676,8 +670,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::ReAlloc:
-    {
+    case Opcode::ReAlloc: {
         CONVERT_OPERAND(amount, uint64_t, getUIntVal);
         CHECK_STACK_UNDERFLOW(1);
 
@@ -699,8 +692,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::Free:
-    {
+    case Opcode::Free: {
         CHECK_STACK_UNDERFLOW(1);
 
         auto value = mStack[--mSp];
@@ -783,11 +775,10 @@ Err Vm::runInst()
     case Opcode::C2F:
         CAST_VALUE(char, getCharVal, double);
 
-    case Opcode::B2U:
-    {
+    case Opcode::B2U: {
         CHECK_STACK_UNDERFLOW(1);
 
-        bool v     = false;
+        bool v = false;
         auto value = mStack[--mSp];
 
         if (!value.getBoolVal(v))
@@ -800,8 +791,7 @@ Err Vm::runInst()
         break;
     }
 
-    case Opcode::N2B:
-    {
+    case Opcode::N2B: {
         CHECK_STACK_UNDERFLOW(1);
 
         auto value = mStack[--mSp];
@@ -873,8 +863,7 @@ Err Vm::parseInst()
         break;
 
     case OperandType::HasOperand:
-    case OperandType::LoopOperand:
-    {
+    case OperandType::LoopOperand: {
         Value value{};
 
         const char* result = value.readValue(mCurrent);
@@ -882,7 +871,7 @@ Err Vm::parseInst()
             return Err::ParseOperandErr;
 
         mCurrent = result;
-        mPeek    = mCurrent + 1;
+        mPeek = mCurrent + 1;
 
         mInst[mInstLen++] = {opcode, value};
         break;
@@ -895,13 +884,25 @@ Err Vm::parseInst()
     return Err::Ok;
 }
 
-const Instruction& Vm::getCurrentInst() const { return mInst[mIp]; }
+const Instruction& Vm::getCurrentInst() const
+{
+    return mInst[mIp];
+}
 
-const Value* Vm::getStack() const { return mStack; }
+const Value* Vm::getStack() const
+{
+    return mStack;
+}
 
-size_t Vm::getSp() const { return mSp; }
+size_t Vm::getSp() const
+{
+    return mSp;
+}
 
-bool Vm::isHalt() const { return mIsHalt; }
+bool Vm::isHalt() const
+{
+    return mIsHalt;
+}
 
 /* Private member implementations */
 void Vm::nextChar()

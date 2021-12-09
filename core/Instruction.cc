@@ -1,12 +1,10 @@
 #include <cstdint>
+#include <string>
 
 #define USE_OPCODE_MACRO
 #include "Instruction.hh"
 
-static constexpr size_t strLen(const char* str)
-{
-    return *str ? 1 + strLen(str + 1) : 0;
-}
+static constexpr auto strLen = std::char_traits<char>::length;
 
 static constexpr uint64_t fnv1Hash(const char* str, size_t len)
 {

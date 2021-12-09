@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstring>
+#include <filesystem>
 #include <iostream>
 
 #include "Compiler.hh"
@@ -24,8 +25,9 @@ const char* findExtension(const char* fileName)
 
 int main(int argc, char* argv[])
 {
-    Err err         = Err::Ok;
+    Err err = Err::Ok;
     char* sourceStr = nullptr;
+    auto currentPath = std::filesystem::current_path();
     char buffer[100];
 
     // Check whether any argument is given
@@ -38,7 +40,7 @@ int main(int argc, char* argv[])
 
     // Take an input file name and extract an extension of given one
     const char* inputFilename = argv[1];
-    const char* extension     = findExtension(inputFilename);
+    const char* extension = findExtension(inputFilename);
 
     if (extension == nullptr)
     {
@@ -86,13 +88,15 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-	char* output;
-	glosso::olfactory::Preprocessor prep{inputFilename, sourceStr};
-	if ((err = prep.preprocess(&output)) != Err::Ok)
-	{
-		std::cerr << err << " while preprocessing the code" << std::endl;
-		return 1;
-	}
+    char* output;
+    glosso::olfactory::Preprocessor prep{inputFilename, sourceStr};
+    if ((err = prep.preprocess(&output)) != Err::Ok)
+    {
+        std::cerr << err << " while preprocessing the code" << std::endl;
+        return 1;
+    }
+
+    std::filesystem::current_path(currentPath);
 
     // Main part
     glosso::olfactory::Compiler compiler{output};
