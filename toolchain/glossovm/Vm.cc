@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -706,6 +707,25 @@ Err Vm::runInst()
         break;
     }
 
+    case Opcode::Read: {
+        CONVERT_OPERAND(prefilename, size_t, getGlobalPtrVal);
+        CHECK_STACK_OVERFLOW(1);
+
+        Err err = Err::Ok;
+        auto filename = mGlobalData + prefilename;
+        char* output = nullptr;
+
+        if ((err = readFile(output, filename, AtorType::CStyle)) != Err::Ok)
+        {
+            return err;
+        }
+
+        mStack[mSp++] = Value{output};
+
+        ++mIp;
+        break;
+    }
+
     case Opcode::ReadI:
         READ_VALUE(int64_t);
 
@@ -720,6 +740,12 @@ Err Vm::runInst()
 
     case Opcode::ReadB:
         READ_VALUE(bool);
+
+    case Opcode::Write: {
+        // TODO(#15): yet this does nothing
+        ++mIp;
+        break;
+    }
 
     case Opcode::WriteI:
         WRITE_VALUE(int64_t, getIntVal);
