@@ -1,13 +1,16 @@
 #include <cassert>
 #include <cerrno>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include "FileIO.hh"
 
 using Err = glosso::glossovm::GlossoVmErr;
+using AtorType = glosso::glossovm::AtorType;
 
-Err glosso::glossovm::readFile(char** output, const char* inputFilename)
+Err glosso::glossovm::readFile(char** output, const char* inputFilename,
+                               AtorType ator)
 {
     assert(*output == nullptr);
 
@@ -37,7 +40,16 @@ Err glosso::glossovm::readFile(char** output, const char* inputFilename)
 
     rewind(inputFile);
 
-    (*output) = new char[(size_t)sourceLen + 1];
+    switch (ator)
+    {
+    case AtorType::CppStyle:
+        (*output) = new char[(size_t)sourceLen + 1];
+        break;
+    case AtorType::CStyle:
+        (*output) = (char*)malloc((size_t)sourceLen + 1);
+        break;
+    }
+
     fread((void*)(*output), 1, (size_t)sourceLen, inputFile);
     (*output)[sourceLen] = '\0';
 
@@ -52,7 +64,17 @@ Err glosso::glossovm::readFile(char** output, const char* inputFilename)
     return Err::Ok;
 
 EXCEPTION_HANDLE:
-    delete[](*output);
+    switch (ator)
+    {
+    case AtorType::CppStyle:
+        delete[](*output);
+        break;
+    case AtorType::CStyle:
+        free((void*)(*output));
+        break;
+    }
+	(*output) = nullptr;
+
     if (inputFile != nullptr)
         fclose(inputFile);
 

@@ -63,11 +63,13 @@
     O("alloc", Alloc)                                                          \
     O("realloc", ReAlloc)                                                      \
     O("free", Free)                                                            \
+    O("read", Read)                                                            \
     O("readi", ReadI)                                                          \
     O("readu", ReadU)                                                          \
     O("readf", ReadF)                                                          \
     O("readc", ReadC)                                                          \
     O("readb", ReadB)                                                          \
+    O("write", Write)                                                          \
     O("writei", WriteI)                                                        \
     O("writeu", WriteU)                                                        \
     O("writef", WriteF)                                                        \
@@ -126,6 +128,8 @@ inline OperandType hasOperand(const Opcode& opcode)
     case Opcode::Swap:
     case Opcode::Alloc:
     case Opcode::ReAlloc:
+	case Opcode::Read:
+	case Opcode::Write:
         return OperandType::HasOperand;
     case Opcode::Jmp:
     case Opcode::JmpTrue:
@@ -136,6 +140,19 @@ inline OperandType hasOperand(const Opcode& opcode)
         return OperandType::LoopOperand;
     default:
         return OperandType::NoOperand;
+    }
+}
+
+inline bool hasStringOperand(Opcode op)
+{
+    switch (op)
+    {
+    case Opcode::Push:
+    case Opcode::Read:
+    case Opcode::Write:
+        return true;
+    default:
+        return false;
     }
 }
 
