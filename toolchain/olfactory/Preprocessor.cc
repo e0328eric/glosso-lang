@@ -235,7 +235,7 @@ Err Preprocessor::parseIncludes(std::string& string)
 // Syntax of %define grammar
 //
 // %define <indentifier> <expression>
-// TODO: At present, the <expression> is just a bunch words and
+// TODO(#14): At present, the <expression> is just a bunch words and
 // the preprocessor does just copy and paste the words
 // That means that it is not smart enough to act like C's one
 Err Preprocessor::parseDefine()
