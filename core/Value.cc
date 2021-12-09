@@ -510,9 +510,11 @@ void Value::printValue(const char* globalData) const
     case ValueType::GlobalPtr:
         std::cout << &globalData[mAs.globalPtrVal];
         break;
-    // TODO(#6): printing heap pointer is yet implemented
+    // TODO(#16): For now on, it is assumed to print raw string literals
+	// but it can be an array of bytes
+	// later, if the string type is necessary, implement it
     case ValueType::HeapPtr:
-        std::cout << "(not implemented yet)";
+        std::cout << (char*)mAs.heapPtrVal;
         break;
     }
 }
