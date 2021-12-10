@@ -21,12 +21,12 @@ Experimental language development inspired by [Tsoding's bm](https://github.com/
 - [ ] Implement a new language whose target is glasm
 
 # Build
-Currently, only UNIX related os can build entire codes.
+Currently, I tested this build script only at mac os.
 
 ## using python script
 
 This project can be build using python script.
-It uses `clang` compiler in default.
+It uses `gcc` compiler that is installed by `homebrew`.
 
 ```console
 ./cb b

@@ -74,8 +74,12 @@ def cat_to_str(list):
     return " ".join(list)
 
 
-def print_info(string):
-    print("[INFO] " + string)
+def print_info(string, emph=False):
+    if emph:
+        print()
+        print("       \x1b[1m\x1b[4m" + string + "\x1b[0m")
+    else:
+        print("[INFO] " + string)
 
 
 def run_with(*args):
@@ -115,7 +119,7 @@ if len(sys.argv) > 1:
         #################
         # Building libs #
         #################
-        print_info("\x1b[1m\x1b[4mBuilding Libs\x1b[0m")
+        print_info("Building Libs", emph=True)
         run_with(
             "cc -Wall -W -Os -c ./lib/linenoise/linenoise.c -o ./build/obj/linenoise.o"
         )
@@ -125,7 +129,7 @@ if len(sys.argv) > 1:
         #################
         # Building Core #
         #################
-        print_info("\x1b[1m\x1b[4mBuilding Core\x1b[0m")
+        print_info("Building Core", emph=True)
         objs_list = []
         for src in CORE_SRCS:
             objs_list.append(
@@ -152,7 +156,7 @@ if len(sys.argv) > 1:
         ######################
         # Building Olfactory #
         ######################
-        print_info("\x1b[1m\x1b[4mBuilding Olfactory\x1b[0m")
+        print_info("Building Olfactory", emph=True)
         objs_list.clear()
         for src in OLFACTORY_SRCS:
             objs_list.append(
@@ -182,7 +186,7 @@ if len(sys.argv) > 1:
         #####################
         # Building Glossovm #
         #####################
-        print_info("\x1b[1m\x1b[4mBuilding GlossoVm\x1b[0m")
+        print_info("Building GlossoVm", emph=True)
         objs_list.clear()
         for src in GLOSSOVM_SRCS:
             objs_list.append(

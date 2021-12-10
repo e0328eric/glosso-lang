@@ -21,3 +21,18 @@ sum:
 	sum__ret:
 		pop
 		ret
+
+;; Rotate a stack
+;; Input stack status
+;; [ (a) (b) (c) ]
+;;
+;; Output stack status
+;; [ (b) (c) (a) ]
+
+;; [ (a) (b) (c) (addr)
+rotate:
+	swap 1    ;; [ (a) (b) (addr) (c)
+	swap 2    ;; [ (a) (c) (addr) (b)
+	swap 3    ;; [ (b) (c) (addr) (a)
+	swap 1    ;; [ (b) (c) (a) (addr)
+	ret       ;; END OF rotate_

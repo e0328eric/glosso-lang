@@ -16,7 +16,7 @@ Debugger::Debugger(const char* source) : Vm(source)
 
 Err Debugger::run()
 {
-	bool isQuit = false;
+    bool isQuit = false;
     char* line = nullptr;
     char saveChar = 's';
     Err err = Vm::parse();
@@ -37,8 +37,8 @@ Err Debugger::run()
         }
 
         // This debugger needs only first character of the given command.
-		// Thus, save and sound are the same argument and valid one
-        saveChar = line[0];
+        // Thus, save and sound are the same argument and valid one
+        saveChar = line[0] != 0 ? line[0] : saveChar;
 
         err = runArgument(&isQuit, saveChar);
 

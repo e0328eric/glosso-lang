@@ -6,63 +6,45 @@
 
 using namespace glosso;
 
-Value::Value()
-    : mType(ValueType::Null)
-    , mAs({.uintVal = 0ULL})
+Value::Value() : mType(ValueType::Null), mAs({.uintVal = 0ULL})
 {
 }
 
-Value::Value(int val)
-    : mType(ValueType::Integer)
-    , mAs({.intVal = (int64_t)val})
+Value::Value(int val) : mType(ValueType::Integer), mAs({.intVal = (int64_t)val})
 {
 }
 
 Value::Value(unsigned int val)
-    : mType(ValueType::UInteger)
-    , mAs({.uintVal = (uint64_t)val})
+    : mType(ValueType::UInteger), mAs({.uintVal = (uint64_t)val})
 {
 }
 
-Value::Value(int64_t val)
-    : mType(ValueType::Integer)
-    , mAs({.intVal = val})
+Value::Value(int64_t val) : mType(ValueType::Integer), mAs({.intVal = val})
 {
 }
 
-Value::Value(uint64_t val)
-    : mType(ValueType::UInteger)
-    , mAs({.uintVal = val})
+Value::Value(uint64_t val) : mType(ValueType::UInteger), mAs({.uintVal = val})
 {
 }
 
-Value::Value(double val)
-    : mType(ValueType::Float)
-    , mAs({.floatVal = val})
+Value::Value(double val) : mType(ValueType::Float), mAs({.floatVal = val})
 {
 }
 
-Value::Value(char val)
-    : mType(ValueType::Char)
-    , mAs({.charVal = val})
+Value::Value(char val) : mType(ValueType::Char), mAs({.charVal = val})
 {
 }
 
-Value::Value(bool val)
-    : mType(ValueType::Boolean)
-    , mAs({.boolVal = val})
+Value::Value(bool val) : mType(ValueType::Boolean), mAs({.boolVal = val})
 {
 }
 
 Value::Value(size_t val)
-    : mType(ValueType::GlobalPtr)
-    , mAs({.globalPtrVal = val})
+    : mType(ValueType::GlobalPtr), mAs({.globalPtrVal = val})
 {
 }
 
-Value::Value(void* val)
-    : mType(ValueType::HeapPtr)
-    , mAs({.heapPtrVal = val})
+Value::Value(void* val) : mType(ValueType::HeapPtr), mAs({.heapPtrVal = val})
 {
 }
 
@@ -133,8 +115,14 @@ std::partial_ordering Value::operator<=>(const Value& rhs) const
     }
 }
 
-bool Value::operator==(const Value& rhs) const { return (*this <=> rhs) == 0; }
-bool Value::operator!=(const Value& rhs) const { return (*this <=> rhs) != 0; }
+bool Value::operator==(const Value& rhs) const
+{
+    return (*this <=> rhs) == 0;
+}
+bool Value::operator!=(const Value& rhs) const
+{
+    return (*this <=> rhs) != 0;
+}
 
 Value Value::operator+(const Value& rhs)
 {
@@ -146,6 +134,8 @@ Value Value::operator+(const Value& rhs)
         return Value{mAs.intVal + (int64_t)rhs.mAs.uintVal};
     case match(ValueType::Integer, ValueType::Float):
         return Value{(double)mAs.intVal + rhs.mAs.floatVal};
+    case match(ValueType::Integer, ValueType::Char):
+        return Value{mAs.intVal + (int64_t)rhs.mAs.charVal};
     case match(ValueType::Integer, ValueType::HeapPtr):
         return Value{(void*)((char*)rhs.mAs.heapPtrVal + mAs.intVal)};
 
@@ -155,6 +145,8 @@ Value Value::operator+(const Value& rhs)
         return Value{mAs.uintVal + rhs.mAs.uintVal};
     case match(ValueType::UInteger, ValueType::Float):
         return Value{(double)mAs.uintVal + rhs.mAs.floatVal};
+    case match(ValueType::UInteger, ValueType::Char):
+        return Value{mAs.uintVal + (uint64_t)rhs.mAs.charVal};
     case match(ValueType::UInteger, ValueType::HeapPtr):
         return Value{(void*)((char*)rhs.mAs.heapPtrVal + mAs.uintVal)};
 
@@ -164,6 +156,11 @@ Value Value::operator+(const Value& rhs)
         return Value{mAs.floatVal + (double)rhs.mAs.uintVal};
     case match(ValueType::Float, ValueType::Float):
         return Value{mAs.floatVal + rhs.mAs.floatVal};
+
+    case match(ValueType::Char, ValueType::Integer):
+        return Value{(int64_t)mAs.charVal + rhs.mAs.intVal};
+    case match(ValueType::Char, ValueType::UInteger):
+        return Value{(uint64_t)mAs.charVal + rhs.mAs.uintVal};
 
     case match(ValueType::HeapPtr, ValueType::Integer):
         return Value{(void*)((char*)mAs.heapPtrVal + rhs.mAs.intVal)};
@@ -185,6 +182,8 @@ Value Value::operator-(const Value& rhs)
         return Value{mAs.intVal - (int64_t)rhs.mAs.uintVal};
     case match(ValueType::Integer, ValueType::Float):
         return Value{(double)mAs.intVal - rhs.mAs.floatVal};
+    case match(ValueType::Integer, ValueType::Char):
+        return Value{mAs.intVal - (int64_t)rhs.mAs.charVal};
     case match(ValueType::Integer, ValueType::HeapPtr):
         return Value{(void*)((char*)rhs.mAs.heapPtrVal - mAs.intVal)};
 
@@ -194,6 +193,8 @@ Value Value::operator-(const Value& rhs)
         return Value{mAs.uintVal - rhs.mAs.uintVal};
     case match(ValueType::UInteger, ValueType::Float):
         return Value{(double)mAs.uintVal - rhs.mAs.floatVal};
+    case match(ValueType::UInteger, ValueType::Char):
+        return Value{mAs.uintVal - (uint64_t)rhs.mAs.charVal};
     case match(ValueType::UInteger, ValueType::HeapPtr):
         return Value{(void*)((char*)rhs.mAs.heapPtrVal - mAs.uintVal)};
 
@@ -204,10 +205,19 @@ Value Value::operator-(const Value& rhs)
     case match(ValueType::Float, ValueType::Float):
         return Value{mAs.floatVal - rhs.mAs.floatVal};
 
+    case match(ValueType::Char, ValueType::Integer):
+        return Value{(int64_t)mAs.charVal - rhs.mAs.intVal};
+    case match(ValueType::Char, ValueType::UInteger):
+        return Value{(int64_t)mAs.charVal - (int64_t)rhs.mAs.uintVal};
+    case match(ValueType::Char, ValueType::Char):
+        return Value{(int64_t)mAs.charVal - (int64_t)rhs.mAs.charVal};
+
     case match(ValueType::HeapPtr, ValueType::Integer):
         return Value{(void*)((char*)mAs.heapPtrVal - rhs.mAs.intVal)};
     case match(ValueType::HeapPtr, ValueType::UInteger):
         return Value{(void*)((char*)mAs.heapPtrVal - rhs.mAs.uintVal)};
+	case match(ValueType::HeapPtr, ValueType::HeapPtr):
+		return Value{(int64_t)((char*)mAs.heapPtrVal - (char*)rhs.mAs.heapPtrVal)};
 
     default:
         return Value{};
@@ -348,7 +358,10 @@ Value& Value::operator--()
 }
 
 /* Utilities */
-bool Value::isType(ValueType valType) const { return mType == valType; }
+bool Value::isType(ValueType valType) const
+{
+    return mType == valType;
+}
 
 bool Value::getIntVal(int64_t& intVal) const
 {
@@ -511,8 +524,8 @@ void Value::printValue(const char* globalData) const
         std::cout << &globalData[mAs.globalPtrVal];
         break;
     // TODO(#16): For now on, it is assumed to print raw string literals
-	// but it can be an array of bytes
-	// later, if the string type is necessary, implement it
+    // but it can be an array of bytes
+    // later, if the string type is necessary, implement it
     case ValueType::HeapPtr:
         std::cout << (char*)mAs.heapPtrVal;
         break;
