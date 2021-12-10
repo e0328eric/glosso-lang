@@ -25,6 +25,7 @@ enum class GlossoVmErr
     ReadWithNonPtrValueErr,
     WriteWithNonPtrValueErr,
     WriteValueErr,
+	DebuggerLinenoiseErr,
 };
 
 std::ostream& operator<<(std::ostream& os, const GlossoVmErr& err);

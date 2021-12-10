@@ -12,7 +12,8 @@ enum class AtorType
 };
 
 GlossoVmErr readFile(char** output, const char* inputFilename,
-                     AtorType ator = AtorType::CppStyle);
+                     AtorType ator = AtorType::CppStyle,
+                     uint64_t* lenOutput = nullptr);
 } // namespace glosso::glossovm
 
 #endif // GLOSSO_TOOLCHAIN_GLOSSOVM_FILEIO_HH_

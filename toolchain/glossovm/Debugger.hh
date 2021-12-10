@@ -13,7 +13,7 @@ class Debugger : public Vm
     ~Debugger() override = default;
 
     Debugger(const Debugger&) = delete;
-    Debugger(Debugger&&)      = delete;
+    Debugger(Debugger&&) = delete;
     Debugger& operator=(const Debugger&&) = delete;
     Debugger& operator=(Debugger&&) = delete;
 
@@ -21,6 +21,7 @@ class Debugger : public Vm
 
   private:
     GlossoVmErr runArgument(bool* isQuit, char ch);
+
 };
 } // namespace glosso::glossovm
 

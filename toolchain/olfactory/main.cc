@@ -10,6 +10,10 @@
 
 using Err = glosso::olfactory::OlfactoryErr;
 
+constexpr const char* USAGE_MSG =
+    "USAGE: olfactory <input-file> [-o <output-file>]";
+constexpr const char* VERSION = "0.1.0";
+
 const char* findExtension(const char* fileName)
 {
     const char* output = fileName;
@@ -33,10 +37,22 @@ int main(int argc, char* argv[])
     // Check whether any argument is given
     if (argc < 2)
     {
-        std::cerr << "USAGE: olfactory <input-file> [-o <output-file>]\n";
+        std::cerr << USAGE_MSG << "\n";
         std::cerr << "ERROR: no input files" << std::endl;
         return 1;
     }
+
+    // parse --help and --version flags
+    if (strncmp(argv[1], "-h", 2) == 0 || strncmp(argv[1], "--help", 6) == 0)
+    {
+        std::cout << USAGE_MSG << std::endl;
+        return 0;
+    }
+	if (strncmp(argv[1], "-v", 2) == 0 || strncmp(argv[1], "--version", 9) == 0)
+	{
+		std::cout << VERSION << std::endl;
+		return 0;
+	}
 
     // Take an input file name and extract an extension of given one
     const char* inputFilename = argv[1];
@@ -61,14 +77,14 @@ int main(int argc, char* argv[])
         break;
 
     case 3:
-        std::cerr << "USAGE: olfactory <input-file> [-o <output-file>]\n";
+        std::cerr << USAGE_MSG << "\n";
         std::cerr << "ERROR: specify the output file name" << std::endl;
         return 1;
 
     case 4:
         if (argv[3][0] == '-')
         {
-            std::cerr << "USAGE: olfactory <input-file> [-o <output-file>]\n";
+            std::cerr << USAGE_MSG << "\n";
             std::cerr << "ERROR: specify the output file name" << std::endl;
             return 1;
         }
@@ -76,7 +92,7 @@ int main(int argc, char* argv[])
         break;
 
     default:
-        std::cerr << "USAGE: olfactory <input-file> [-o <output-file>]\n";
+        std::cerr << USAGE_MSG << "\n";
         std::cerr << "ERROR: too many input found" << std::endl;
         return 1;
     }

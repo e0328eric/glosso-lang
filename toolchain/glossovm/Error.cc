@@ -61,6 +61,9 @@ std::ostream& glosso::glossovm::operator<<(std::ostream& os,
     case GlossoVmErr::WriteValueErr:
         os << "ERROR: failed to write a value on the given pointer";
         break;
+	case GlossoVmErr::DebuggerLinenoiseErr:
+		os << "ERROR: linenoise error occurs";
+		break;
     }
 
     return os;

@@ -10,7 +10,7 @@ using Err = glosso::glossovm::GlossoVmErr;
 using AtorType = glosso::glossovm::AtorType;
 
 Err glosso::glossovm::readFile(char** output, const char* inputFilename,
-                               AtorType ator)
+                               AtorType ator, uint64_t* lenOutput)
 {
     assert(*output == nullptr);
 
@@ -60,6 +60,11 @@ Err glosso::glossovm::readFile(char** output, const char* inputFilename,
         goto EXCEPTION_HANDLE;
     }
 
+	if (lenOutput != nullptr)
+	{
+		*lenOutput = sourceLen;
+	}
+
     fclose(inputFile);
     return Err::Ok;
 
@@ -73,7 +78,7 @@ EXCEPTION_HANDLE:
         free((void*)(*output));
         break;
     }
-	(*output) = nullptr;
+    (*output) = nullptr;
 
     if (inputFile != nullptr)
         fclose(inputFile);

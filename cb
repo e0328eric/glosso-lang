@@ -3,7 +3,12 @@
 import sys
 import os
 
-CXX_COMPILER = "g++-11"
+if sys.platform == "darwin":
+    CXX_COMPILER = "g++-11"
+else:
+    print("This build script is tested only at mac os")
+    os._exit(1)
+
 CXX_STD = "-std=c++20"
 CXX_OPTIONS = [
     # "-ggdb",
@@ -51,6 +56,7 @@ GLOSSOVM_SRCS = [
     "./toolchain/glossovm/main.cc",
 ]
 GLOSSOVM_LIBS = [
+    "-llinenoise",
     "-lglossocore",
 ]
 GLOSSOVM_LIB_DIRS = [
@@ -58,6 +64,7 @@ GLOSSOVM_LIB_DIRS = [
 ]
 GLOSSOVM_INCLUDES = [
     "-Icore",
+    "-Ilib/linenoise",
 ]
 
 # Functions
@@ -96,15 +103,27 @@ def change_file_location(filename, location):
 ######################
 # Main Building Part #
 ######################
+build_arguments = ["build", "b", "install", "i"]
+
 if len(sys.argv) > 1:
-    if sys.argv[1] == "build" or sys.argv[1] == "b":
+    if sys.argv[1] in build_arguments:
         # making directories
         run_with("mkdir -p ./build/obj")
         run_with("mkdir -p ./build/lib")
         run_with("mkdir -p ./build/bin")
 
         #################
-        # building Core #
+        # Building libs #
+        #################
+        print_info("\x1b[1m\x1b[4mBuilding Libs\x1b[0m")
+        run_with(
+            "cc -Wall -W -Os -c ./lib/linenoise/linenoise.c -o ./build/obj/linenoise.o"
+        )
+        run_with("ar rcs liblinenoise.a ./build/obj/linenoise.o")
+        run_with("mv ./liblinenoise.a ./build/lib")
+
+        #################
+        # Building Core #
         #################
         print_info("\x1b[1m\x1b[4mBuilding Core\x1b[0m")
         objs_list = []
@@ -189,6 +208,9 @@ if len(sys.argv) > 1:
             GLOSSOVM_TARGET,
         )
         run_with("mv", GLOSSOVM_TARGET, "./build/bin")
+
+        if sys.argv[1] == "install" or sys.argv[1] == "i":
+            run_with("mv ./build/bin/* ~/.local/bin")
 
         #### END OF COMPILE CODES ####
 

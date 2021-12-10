@@ -710,18 +710,20 @@ Err Vm::runInst()
 
     case Opcode::Read: {
         CONVERT_OPERAND(prefilename, size_t, getGlobalPtrVal);
-        CHECK_STACK_OVERFLOW(1);
+        CHECK_STACK_OVERFLOW(2);
 
         Err err = Err::Ok;
         auto filename = mGlobalData + prefilename;
         char* output = nullptr;
+		uint64_t len;
 
-        if ((err = readFile(&output, filename, AtorType::CStyle)) != Err::Ok)
+        if ((err = readFile(&output, filename, AtorType::CStyle, &len)) != Err::Ok)
         {
             return err;
         }
 
         mStack[mSp++] = Value{output};
+        mStack[mSp++] = Value{len};
 
         ++mIp;
         break;

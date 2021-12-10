@@ -1,52 +1,48 @@
 #include <cassert>
-#include <iostream>
+#include <cstdio>
+
+#include <linenoise.h>
 
 #include "Debugger.hh"
 
 using namespace glosso::glossovm;
 using Err = glosso::glossovm::GlossoVmErr;
 
-Debugger::Debugger(const char* source)
-    : Vm(source)
+constexpr const char* PROMPT = "> ";
+
+Debugger::Debugger(const char* source) : Vm(source)
 {
 }
 
 Err Debugger::run()
 {
-    char keyChar  = '\0';
-    char saveChar = '\0';
-    bool isQuit   = false;
-    Err err       = Vm::parse();
+	bool isQuit = false;
+    char* line = nullptr;
+    char saveChar = 's';
+    Err err = Vm::parse();
+
+    linenoiseHistorySetMaxLen(15);
 
     if (err != Err::Ok)
         return err;
 
     while (!Vm::isHalt() && err == Err::Ok && !isQuit)
     {
-        std::cout << "> ";
+        line = linenoise(PROMPT);
 
-        // TODO(#2): scans opcode is ignored
-        std::cin >> keyChar;
-        if (std::cin.fail())
-            std::cin.clear();
-
-        std::cout << std::endl;
-
-        switch (keyChar)
+        if (!line)
         {
-        case 'r':
-        case 'c':
-        case 's':
-        case 'h':
-        case 'q':
-            saveChar = keyChar;
-            break;
-
-        default:
-            break;
+            linenoiseFree(line);
+            return GlossoVmErr::DebuggerLinenoiseErr;
         }
 
+        // This debugger needs only first character of the given command.
+		// Thus, save and sound are the same argument and valid one
+        saveChar = line[0];
+
         err = runArgument(&isQuit, saveChar);
+
+        linenoiseFree(line);
     }
 
     return err;
@@ -64,21 +60,18 @@ Err Debugger::runArgument(bool* isQuit, char ch)
         break;
 
     case 'c':
-        while (!Vm::isHalt() && err == Err::Ok)
-        {
-            err = runInst();
-            std::cout << "<Instruction>\n";
-            std::cout << Vm::getCurrentInst() << "\n";
-            std::cout << "<Stack>\n";
-            std::cout << "[ ";
-            for (size_t i = 0; i < Vm::getSp(); ++i)
-                std::cout << Vm::getStack()[i] << " ";
-            std::cout << "]\n" << std::endl;
-        }
+        err = runInst();
+        std::cout << "<Next Instruction>\n";
+        std::cout << Vm::getCurrentInst() << "\n";
+        std::cout << "<Stack>\n";
+        std::cout << "[ ";
+        for (size_t i = 0; i < Vm::getSp(); ++i)
+            std::cout << Vm::getStack()[i] << " ";
+        std::cout << "]\n" << std::endl;
         break;
 
     case 's':
-        std::cout << "<Instruction>\n";
+        std::cout << "<Next Instruction>\n";
         std::cout << Vm::getCurrentInst() << "\n";
         std::cout << "<Stack>\n";
         std::cout << "[ ";
@@ -88,11 +81,12 @@ Err Debugger::runArgument(bool* isQuit, char ch)
         break;
 
     case 'h':
-        std::cout << "<Help>\n";
-        std::cout << "r : run the program once\n";
-        std::cout << "s : show the current stack\n";
-        std::cout << "h : show the help message\n";
-        std::cout << "q : quit\n" << std::endl;
+        fprintf(stdout, "<Help>\n");
+        fprintf(stdout, "r : run the program once\n");
+        fprintf(stdout, "s : show the current stack\n");
+        fprintf(stdout, "c : execute both r and s command\n");
+        fprintf(stdout, "h : show the help message\n");
+        fprintf(stdout, "q : quit\n");
         break;
 
     case 'q':
