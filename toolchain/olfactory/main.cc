@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
         std::cout << USAGE_MSG << std::endl;
         return 0;
     }
-	if (strncmp(argv[1], "-v", 2) == 0 || strncmp(argv[1], "--version", 9) == 0)
-	{
-		std::cout << VERSION << std::endl;
-		return 0;
-	}
+    if (strncmp(argv[1], "-v", 2) == 0 || strncmp(argv[1], "--version", 9) == 0)
+    {
+        std::cout << VERSION << std::endl;
+        return 0;
+    }
 
     // Take an input file name and extract an extension of given one
     const char* inputFilename = argv[1];

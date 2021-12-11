@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <string>
@@ -47,7 +48,7 @@ static std::string makeHashString(const char* filename)
 
 Preprocessor::Preprocessor(const char* mainFilePath, const char* source)
     : mMainPath(), mSource(source), mSaveLocation(source), mStart(source),
-      mCurrent(source), mIsPreprocessed(false), mIdentPairs()
+      mCurrent(source), mIsPreprocessed(false), mIdentPairs(), mIsSorted(true)
 {
     memset(static_cast<void*>(mDefinedFstLetter), 0, sizeof(mDefinedFstLetter));
 
@@ -285,6 +286,9 @@ Err Preprocessor::parseDefine()
     // pass the newline
     ++mCurrent;
 
+    // set the sort switch on
+    mIsSorted = false;
+
     return Err::Ok;
 }
 
@@ -293,6 +297,16 @@ Err Preprocessor::pluginDefine(std::string& string, char& includeHandle)
     size_t i;
     IdentPair* pair;
     size_t identPairsLen = mIdentPairs.size();
+
+    // if sort switch is on, sort the mIdentPairs with respect to the length of
+    // the identifier
+    if (!mIsSorted)
+    {
+        std::sort(mIdentPairs.begin(), mIdentPairs.end(), [](auto x, auto y) {
+            return x.identifier.size() > y.identifier.size();
+        });
+        mIsSorted = true;
+    }
 
     for (i = 0; i < identPairsLen; ++i)
     {

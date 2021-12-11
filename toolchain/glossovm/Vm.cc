@@ -448,6 +448,36 @@ Err Vm::runInst()
         break;
     }
 
+	case Opcode::And: {
+        CHECK_STACK_UNDERFLOW(2);
+        auto val1 = mStack[--mSp];
+		auto val2 = mStack[--mSp];
+        mStack[mSp++] = val1 & val2;
+        ++mIp;
+
+        break;
+    }
+
+	case Opcode::Or: {
+        CHECK_STACK_UNDERFLOW(2);
+       	auto val1 = mStack[--mSp];
+		auto val2 = mStack[--mSp];
+        mStack[mSp++] = val1 | val2;
+        ++mIp;
+
+        break;
+    }
+
+	case Opcode::Xor: {
+        CHECK_STACK_UNDERFLOW(2);
+		auto val1 = mStack[--mSp];
+		auto val2 = mStack[--mSp];
+        mStack[mSp++] = val1 ^ val2;
+        ++mIp;
+
+        break;
+    }
+
     case Opcode::Add: {
         CHECK_STACK_UNDERFLOW(2);
         auto val2 = mStack[--mSp];

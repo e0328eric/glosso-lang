@@ -37,6 +37,9 @@
     O("swap", Swap)                                                            \
     O("sswap", Sswap)                                                          \
     O("not", Not)                                                              \
+    O("and", And)                                                              \
+    O("or", Or)                                                                \
+    O("xor", Xor)                                                              \
     O("add", Add)                                                              \
     O("sub", Sub)                                                              \
     O("mul", Mul)                                                              \
@@ -128,8 +131,8 @@ inline OperandType hasOperand(const Opcode& opcode)
     case Opcode::Swap:
     case Opcode::Alloc:
     case Opcode::ReAlloc:
-	case Opcode::Read:
-	case Opcode::Write:
+    case Opcode::Read:
+    case Opcode::Write:
         return OperandType::HasOperand;
     case Opcode::Jmp:
     case Opcode::JmpTrue:

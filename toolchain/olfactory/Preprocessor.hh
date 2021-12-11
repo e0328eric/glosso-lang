@@ -45,6 +45,7 @@ class Preprocessor
 
     std::vector<IdentPair> mIdentPairs;
     bool mDefinedFstLetter[128];
+	bool mIsSorted;
 };
 } // namespace glosso::olfactory
 

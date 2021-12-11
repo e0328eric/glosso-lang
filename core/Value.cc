@@ -284,6 +284,39 @@ Value Value::operator/(const Value& rhs)
     }
 }
 
+Value Value::operator&(const Value& rhs)
+{
+	switch (match(mType, rhs.mType))
+	{
+	case match(ValueType::Boolean, ValueType::Boolean):
+		return Value{mAs.boolVal && rhs.mAs.boolVal};
+	default:
+		return Value{};
+	}
+}
+
+Value Value::operator|(const Value& rhs)
+{
+	switch (match(mType, rhs.mType))
+	{
+	case match(ValueType::Boolean, ValueType::Boolean):
+		return Value{mAs.boolVal || rhs.mAs.boolVal};
+	default:
+		return Value{};
+	}
+}
+
+Value Value::operator^(const Value& rhs)
+{
+	switch (match(mType, rhs.mType))
+	{
+	case match(ValueType::Boolean, ValueType::Boolean):
+		return Value{static_cast<bool>(mAs.boolVal ^ rhs.mAs.boolVal)};
+	default:
+		return Value{};
+	}
+}
+
 Value Value::operator-() const
 {
     switch (mType)

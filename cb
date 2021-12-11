@@ -11,7 +11,7 @@ else:
 
 CXX_STD = "-std=c++20"
 CXX_OPTIONS = [
-    # "-ggdb",
+    #"-ggdb",
     "-O3",
     "-Wall",
     "-Wextra",
