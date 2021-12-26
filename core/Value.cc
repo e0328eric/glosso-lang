@@ -39,7 +39,7 @@ Value::Value(bool val) : mType(ValueType::Boolean), mAs({.boolVal = val})
 {
 }
 
-Value::Value(size_t val)
+Value::Value(SizeInt val)
     : mType(ValueType::GlobalPtr), mAs({.globalPtrVal = val})
 {
 }
@@ -216,8 +216,9 @@ Value Value::operator-(const Value& rhs)
         return Value{(void*)((char*)mAs.heapPtrVal - rhs.mAs.intVal)};
     case match(ValueType::HeapPtr, ValueType::UInteger):
         return Value{(void*)((char*)mAs.heapPtrVal - rhs.mAs.uintVal)};
-	case match(ValueType::HeapPtr, ValueType::HeapPtr):
-		return Value{(int64_t)((char*)mAs.heapPtrVal - (char*)rhs.mAs.heapPtrVal)};
+    case match(ValueType::HeapPtr, ValueType::HeapPtr):
+        return Value{
+            (int64_t)((char*)mAs.heapPtrVal - (char*)rhs.mAs.heapPtrVal)};
 
     default:
         return Value{};
@@ -286,35 +287,35 @@ Value Value::operator/(const Value& rhs)
 
 Value Value::operator&(const Value& rhs)
 {
-	switch (match(mType, rhs.mType))
-	{
-	case match(ValueType::Boolean, ValueType::Boolean):
-		return Value{mAs.boolVal && rhs.mAs.boolVal};
-	default:
-		return Value{};
-	}
+    switch (match(mType, rhs.mType))
+    {
+    case match(ValueType::Boolean, ValueType::Boolean):
+        return Value{mAs.boolVal && rhs.mAs.boolVal};
+    default:
+        return Value{};
+    }
 }
 
 Value Value::operator|(const Value& rhs)
 {
-	switch (match(mType, rhs.mType))
-	{
-	case match(ValueType::Boolean, ValueType::Boolean):
-		return Value{mAs.boolVal || rhs.mAs.boolVal};
-	default:
-		return Value{};
-	}
+    switch (match(mType, rhs.mType))
+    {
+    case match(ValueType::Boolean, ValueType::Boolean):
+        return Value{mAs.boolVal || rhs.mAs.boolVal};
+    default:
+        return Value{};
+    }
 }
 
 Value Value::operator^(const Value& rhs)
 {
-	switch (match(mType, rhs.mType))
-	{
-	case match(ValueType::Boolean, ValueType::Boolean):
-		return Value{static_cast<bool>(mAs.boolVal ^ rhs.mAs.boolVal)};
-	default:
-		return Value{};
-	}
+    switch (match(mType, rhs.mType))
+    {
+    case match(ValueType::Boolean, ValueType::Boolean):
+        return Value{static_cast<bool>(mAs.boolVal ^ rhs.mAs.boolVal)};
+    default:
+        return Value{};
+    }
 }
 
 Value Value::operator-() const

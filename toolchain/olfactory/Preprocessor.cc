@@ -162,7 +162,8 @@ Err Preprocessor::preprocess(char** output)
     }
 
     *output = new char[result.size() + 1];
-    strlcpy(*output, result.c_str(), result.size() + 1);
+    std::strncpy(*output, result.c_str(), result.size());
+	(*output)[result.size()] = '\0';
     return Err::Ok;
 }
 
@@ -197,7 +198,8 @@ Err Preprocessor::parseIncludes(std::string& string)
     std::filesystem::current_path(mMainPath);
 
     filename_c = new char[mCurrent - mStart + 1];
-    strlcpy(filename_c, mStart, mCurrent - mStart + 1);
+    std::strncpy(filename_c, mStart, mCurrent - mStart);
+	filename_c[mCurrent - mStart] = '\0';
 
     auto filename = std::filesystem::absolute(filename_c);
 

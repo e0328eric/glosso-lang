@@ -7,6 +7,7 @@
 
 #include "FileIO.hh"
 #include "Metadata.hh"
+#include "SizeInt.hh"
 #include "Vm.hh"
 
 using namespace glosso;
@@ -448,30 +449,30 @@ Err Vm::runInst()
         break;
     }
 
-	case Opcode::And: {
+    case Opcode::And: {
         CHECK_STACK_UNDERFLOW(2);
         auto val1 = mStack[--mSp];
-		auto val2 = mStack[--mSp];
+        auto val2 = mStack[--mSp];
         mStack[mSp++] = val1 & val2;
         ++mIp;
 
         break;
     }
 
-	case Opcode::Or: {
+    case Opcode::Or: {
         CHECK_STACK_UNDERFLOW(2);
-       	auto val1 = mStack[--mSp];
-		auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
+        auto val2 = mStack[--mSp];
         mStack[mSp++] = val1 | val2;
         ++mIp;
 
         break;
     }
 
-	case Opcode::Xor: {
+    case Opcode::Xor: {
         CHECK_STACK_UNDERFLOW(2);
-		auto val1 = mStack[--mSp];
-		auto val2 = mStack[--mSp];
+        auto val1 = mStack[--mSp];
+        auto val2 = mStack[--mSp];
         mStack[mSp++] = val1 ^ val2;
         ++mIp;
 
@@ -745,9 +746,10 @@ Err Vm::runInst()
         Err err = Err::Ok;
         auto filename = mGlobalData + prefilename;
         char* output = nullptr;
-		uint64_t len;
+        uint64_t len;
 
-        if ((err = readFile(&output, filename, AtorType::CStyle, &len)) != Err::Ok)
+        if ((err = readFile(&output, filename, AtorType::CStyle, &len)) !=
+            Err::Ok)
         {
             return err;
         }
@@ -843,7 +845,7 @@ Err Vm::runInst()
         if (!value.getBoolVal(v))
             mStack[mSp++] = Value{};
         else
-            mStack[mSp++] = Value{v ? 1ULL : 0ULL};
+            mStack[mSp++] = Value{static_cast<SizeInt>(v ? 1ULL : 0ULL)};
 
         ++mIp;
 

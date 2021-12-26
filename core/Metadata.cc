@@ -1,3 +1,4 @@
+#include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
 
@@ -11,7 +12,7 @@ Metadata glosso::parseMetadata(const char* data)
 
     if (metadata.magic != MAGIC_NUMBER)
     {
-        fprintf(stderr, "ERROR: invalid magic number. got %lld\n",
+        fprintf(stderr, "ERROR: invalid magic number. got %" PRId64 "\n",
                 metadata.magic);
         exit(1);
     }
@@ -19,7 +20,8 @@ Metadata glosso::parseMetadata(const char* data)
     if (metadata.version != GLOSSO_VM_VERSION)
     {
         fprintf(stderr,
-                "ERROR: invalid version number. expected %lld\n, got %lld\n",
+                "ERROR: invalid version number. expected %" PRId64
+                "\n, got %" PRId64 "\n",
                 GLOSSO_VM_VERSION, metadata.version);
         exit(1);
     }

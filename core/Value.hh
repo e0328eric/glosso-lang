@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <cstdio>
 
+#include "SizeInt.hh"
+
 namespace glosso
 {
 enum class ValueType : uint8_t
@@ -30,7 +32,7 @@ class Value
     explicit Value(double val);
     explicit Value(char val);
     explicit Value(bool val);
-    explicit Value(size_t val);
+    explicit Value(SizeInt val);
     explicit Value(void* val);
 
     std::partial_ordering operator<=>(const Value& rhs) const;
@@ -79,7 +81,7 @@ class Value
         double floatVal;
         char charVal;
         bool boolVal;
-        size_t globalPtrVal;
+        SizeInt globalPtrVal;
         void* heapPtrVal;
     } mAs;
 };
