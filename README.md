@@ -8,6 +8,7 @@ Experimental language development inspired by [Tsoding's bm](https://github.com/
 - [x] Heap allocation (manually managed)
 - [x] Implement Command IO
 - [x] Turing Complete (proved by implementing a basic brainfuck interpreter with fixed memory)
+- [x] Minimal Preprocessor Support
 
 # For the beta version
 
@@ -21,15 +22,15 @@ Experimental language development inspired by [Tsoding's bm](https://github.com/
 - [ ] Implement a new language whose target is glasm
 
 # Build
-Currently, I tested this build script only at mac os.
 
-## using python script
+Currently, I tested this build script at macos and linux (especially, Arch Linux).
 
-This project can be build using python script.
-It uses `gcc` compiler that is installed by `homebrew`.
+## using aedif
+
+[aedif](https://github.com/e0328eric/aedif) is a build tool implemented by myself.
 
 ```console
-./cb b
+$ aedif build
 ```
 
 # Toolchains
@@ -43,8 +44,9 @@ A virtual machine that executes glosso binary (`.gsm` files)
 Assembler for glosso binary. Uses `.glasm` file for input in general
 
 ## example usage
+
 ```console
-./cb b
-./bin/olfactory ../examples/fib.glasm -o fib.gsm
-./bin/glossovm fib.gsm
+$ aedif build
+$ ./build/bin/olfactory ../examples/fib.glasm -o fib.gsm
+$ ./build/bin/glossovm fib.gsm
 ```
