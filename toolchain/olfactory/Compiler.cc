@@ -8,6 +8,7 @@
 
 #include "Compiler.hh"
 #include "Metadata.hh"
+#include "SizeInt.hh"
 
 using namespace glosso;
 using namespace glosso::olfactory;
@@ -437,7 +438,7 @@ Err Compiler::parseString(Value* output, const Opcode& opcode)
     mGlobalMemCount += (size_t)(mCurrent - mStart - 1);
     mGlobalMem[mGlobalMemCount++] = '\0';
 
-    *output = Value{memStart};
+    *output = Value{static_cast<SizeInt>(memStart)};
     return Err::Ok;
 }
 
