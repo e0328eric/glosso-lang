@@ -12,8 +12,8 @@ set(COMPILE_OPTIONS -O3 -Wall -Wextra -Wpedantic -Wconversion -Werror=return-typ
 
 enable_testing()
 
+add_subdirectory(lib)
 add_subdirectory(core)
-add_subdirectory(lib/linenoise)
 add_subdirectory(toolchain/glossovm)
 add_subdirectory(toolchain/olfactory)
 
