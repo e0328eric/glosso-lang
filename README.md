@@ -23,14 +23,11 @@ Experimental language development inspired by [Tsoding's bm](https://github.com/
 
 # Build
 
-Currently, I tested this build script at macos and linux (especially, Arch Linux).
-
-## using aedif
-
-[aedif](https://github.com/e0328eric/aedif) is a build tool implemented by myself.
+## using cmake
 
 ```console
-$ aedif build
+$ cmake -S . -B ./build
+$ make -C ./build
 ```
 
 # Toolchains
@@ -46,7 +43,8 @@ Assembler for glosso binary. Uses `.glasm` file for input in general
 ## example usage
 
 ```console
-$ aedif build
+$ cmake -S . -B ./build
+$ make -C ./build
 $ ./build/bin/olfactory ../examples/fib.glasm -o fib.gsm
 $ ./build/bin/glossovm fib.gsm
 ```
