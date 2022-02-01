@@ -60,10 +60,10 @@ Err glosso::glossovm::readFile(char** output, const char* inputFilename,
         goto EXCEPTION_HANDLE;
     }
 
-	if (lenOutput != nullptr)
-	{
-		*lenOutput = sourceLen;
-	}
+    if (lenOutput != nullptr)
+    {
+        *lenOutput = static_cast<uint64_t>(sourceLen);
+    }
 
     fclose(inputFile);
     return Err::Ok;

@@ -16,7 +16,7 @@ constexpr char FIRST_INCLUDE_MACRO_FOUND = 1 << 0;
 constexpr char NON_MACRO_CHAR_FOUND = 1 << 1;
 constexpr char APPEND_MAIN_LOCATION_FINISHED = 1 << 2;
 
-static constexpr uint64_t fnv1Hash(const char* str)
+static uint64_t fnv1Hash(const char* str)
 {
     size_t len = strlen(str);
     uint64_t output = 0xcbf29ce484222325ULL;
@@ -47,8 +47,9 @@ static std::string makeHashString(const char* filename)
 }
 
 Preprocessor::Preprocessor(const char* mainFilePath, const char* source)
-    : mMainPath(), mSource(source), mSaveLocation(source), mStart(source),
-      mCurrent(source), mIsPreprocessed(false), mIdentPairs(), mIsSorted(true)
+    : mMainPath(), mSource(source), mStart(source), mCurrent(source),
+      mIsPreprocessed(false), mIdentPairs(), mDefinedFstLetter(),
+      mIsSorted(true)
 {
     memset(static_cast<void*>(mDefinedFstLetter), 0, sizeof(mDefinedFstLetter));
 
@@ -59,8 +60,9 @@ Preprocessor::Preprocessor(const char* mainFilePath, const char* source)
 
 Preprocessor::Preprocessor(const std::filesystem::path& mainFilePath,
                            const char* source)
-    : mMainPath(), mSource(source), mSaveLocation(source), mStart(source),
-      mCurrent(source), mIsPreprocessed(false), mIdentPairs()
+    : mMainPath(), mSource(source), mStart(source), mCurrent(source),
+      mIsPreprocessed(false), mIdentPairs(), mDefinedFstLetter(),
+      mIsSorted(true)
 {
     memset(static_cast<void*>(mDefinedFstLetter), 0, sizeof(mDefinedFstLetter));
 
@@ -82,7 +84,7 @@ Preprocessor::~Preprocessor()
 // 0 0 0
 // (1st) 1 if the first include macro was found
 // (2nd) 1 if the first non-macro character was found
-// (3rd) 1 if appending the main locaion label is finished
+// (3rd) 1 if appending the main location label is finished
 Err Preprocessor::preprocess(char** output)
 {
     Err err = Err::Ok;
@@ -163,7 +165,7 @@ Err Preprocessor::preprocess(char** output)
 
     *output = new char[result.size() + 1];
     std::strncpy(*output, result.c_str(), result.size());
-	(*output)[result.size()] = '\0';
+    (*output)[result.size()] = '\0';
     return Err::Ok;
 }
 
@@ -197,9 +199,9 @@ Err Preprocessor::parseIncludes(std::string& string)
     // is located
     std::filesystem::current_path(mMainPath);
 
-    filename_c = new char[mCurrent - mStart + 1];
-    std::strncpy(filename_c, mStart, mCurrent - mStart);
-	filename_c[mCurrent - mStart] = '\0';
+    filename_c = new char[static_cast<size_t>(mCurrent - mStart + 1)];
+    std::strncpy(filename_c, mStart, static_cast<size_t>(mCurrent - mStart));
+    filename_c[mCurrent - mStart] = '\0';
 
     auto filename = std::filesystem::absolute(filename_c);
 
@@ -283,7 +285,7 @@ Err Preprocessor::parseDefine()
     }
 
     std::string_view value{mStart, static_cast<size_t>(mCurrent - mStart)};
-    mIdentPairs.emplace_back(identifier, value);
+    mIdentPairs.push_back({identifier, value});
 
     // pass the newline
     ++mCurrent;

@@ -38,14 +38,13 @@ class Preprocessor
   private:
     std::filesystem::path mMainPath;
     const char* mSource;
-    const char* mSaveLocation;
     const char* mStart;
     const char* mCurrent;
     bool mIsPreprocessed;
 
     std::vector<IdentPair> mIdentPairs;
     bool mDefinedFstLetter[128];
-	bool mIsSorted;
+    bool mIsSorted;
 };
 } // namespace glosso::olfactory
 

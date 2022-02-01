@@ -33,7 +33,7 @@ syntax keyword glasmKeywords readu writeu scanu
 syntax keyword glasmKeywords readf writef scanf
 syntax keyword glasmKeywords readc writec scanc
 syntax keyword glasmKeywords readb writeb scanb
-syntax keyword glasmKeywords scans
+syntax keyword glasmKeywords read scans
 syntax keyword glasmKeywords print println prints printsln
 syntax keyword glasmKeywords i2u u2i u2b b2u
 syntax keyword glasmKeywords i2f f2i i2b b2i n2b
